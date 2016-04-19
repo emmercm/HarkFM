@@ -1,0 +1,179 @@
+<!DOCTYPE html> 
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link href="static/css/bootstrap-3.3.6.min.css" rel="stylesheet" />
+        <link href="static/css/font-awesome-4.5.0.min.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css" />
+
+        <link href="static/css/harkfm.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <py:if test="current">
+            <div class="navbar navbar-fixed-top bar-app">
+                <div class="row">
+                    <div>
+                        <span class="${current.app_icon or 'glyphicon glyphicon-music'}"></span>
+                    </div>
+                    <div>
+                        Scrobbling from
+                        <br />
+                        <b>${current.app}</b>
+                    </div>
+                    <button class="btn btn-default" onclick="py.onLogout(this);">Logout</button>
+                </div>
+            </div>
+
+            <div class="navbar navbar-fixed-top bar-time">
+                <div class="row">
+                    <div class="progress">
+                        <div class="progress-bar text-right" style="width:${current._percent}%;">${current._elapsed}</div>
+                        <div class="progress-bar">${current._remaining}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid info-track">
+                <div class="row">
+                    <div class="col-xs-4" py:if="current.album_img">
+                        <div class="img-box">
+                            <a href="${current.album_url}" py:strip="not current.album_url">
+                                <img src="${current.album_img}" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="${'col-xs-8' if current.album_img else 'col-xs-12'}">
+                        <h4><a href="${current.track_url}" py:strip="not current.track_url">${current.track}</a></h4>
+                        <div>by <a href="${current.artist_url}" py:strip="not current.artist_url">${current.artist}</a></div>
+                        <div py:if="current.album">
+                            from <a href="${current.album_url}" py:strip="not current.album_url">${current.album}</a>
+                            <py:if test="current.album_year">(${current.album_year})</py:if>
+                        </div>
+                        <hr />
+                        <span class="fa ${'fa-heart' if current.track_loved else 'fa-heart-o'}" onclick="py.onLove(this);" py:if="type(current.track_loved) is bool"></span>                        <span class="glyphicon glyphicon-tag"></span>
+                        <py:if test="current.track_wiki">
+                            <hr />
+                            <div>${Markup(current.track_wiki)}</div>
+                        </py:if>
+                    </div>
+                </div>
+                <div class="row" py:if="str(current.artist_plays).isdigit() or str(current.track_plays).isdigit()">
+                    <div class="bubble">
+                        You've listened to <a href="${current.artist_url}" py:strip="not current.artist_url">${current.artist}</a> ${'{:,}'.format(current.artist_plays or 0)} time<py:if test="(current.artist_plays or 0)!=1">s</py:if>
+                        and <a href="${current.track_url}" py:strip="not current.track_url">${current.track}</a> ${'{:,}'.format(current.track_plays or 0)} time<py:if test="(current.track_plays or 0)!=1">s</py:if>.
+                    </div>
+                </div>
+                <div class="row" py:if="len(current.track_tags) > 0">
+                    <div class="col-xs-12">
+                        Popular tags:
+                        <py:for each="tag in current.track_tags">
+                            <py:if test="tag != current.track_tags[0]">&bull;</py:if>
+                            <a href="${tag['url']}">${tag['name']}</a>
+                        </py:for>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid info-artist" py:if="current.artist_img or current.artist_wiki or current.artist_tags">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>
+                            <a href="${current.artist_url}" py:strip="not current.artist_url">${current.artist}</a>
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4" py:if="current.artist_img">
+                        <div class="img-box">
+                            <a href="${current.artist_url}" py:strip="not current.artist_url">
+                                <img src="${current.artist_img}" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="${'col-xs-8' if current.artist_img else 'col-xs-12'}">
+                        ${Markup(current.artist_wiki)}
+                    </div>
+                </div>
+                <div class="row" py:if="str(current.artist_listeners).isdigit() or str(current.artist_plays_global).isdigit()">
+                    <div class="col-xs-4">
+                        <b>${'{:,}'.format(current.artist_listeners or 0)}</b>
+                        <br />
+                        Listener<py:if test="(current.artist_listeners or 0)!=1">s</py:if>
+                    </div>
+                    <div class="col-xs-4">
+                        <b>${'{:,}'.format(current.artist_plays_global or 0)}</b>
+                        <br />
+                        Play<py:if test="(current.artist_plays_global or 0)!=1">s</py:if>
+                    </div>
+                    <div class="col-xs-4">
+                        <b>${'{:,}'.format(current.artist_plays or 0)}</b>
+                        <br />
+                        Play<py:if test="(current.artist_plays or 0)!=1">s</py:if> in your library
+                    </div>
+                </div>
+                <div class="row" py:if="len(current.artist_tags) > 0">
+                    <div class="col-xs-12">
+                        Popular tags:
+                        <py:for each="tag in current.artist_tags">
+                            <py:if test="tag != current.artist_tags[0]">&bull;</py:if>
+                            <a href="${tag['url']}">${tag['name']}</a>
+                        </py:for>
+                    </div>
+                </div>
+                <py:if test="len(current.artist_similar) > 0">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <hr />
+                            <h3>Similar Artists</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3" py:for="similar in current.artist_similar">
+                            <a href="${similar['url']}">
+                                ${similar['name']}
+                                <div class="img-box">
+                                    <img src="${similar['img']}" />
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </py:if>
+            </div>
+        </py:if>
+
+        <py:if test="not current">
+            <div class="navbar navbar-fixed-top bar-app" py:if="'username' in lastfm">
+                <div class="row">
+                    <div>
+                        <span class="fa fa-lastfm"></span>
+                    </div>
+                    <div>
+                        Hello,
+                        <br />
+                        <b>${lastfm['username']}!</b>
+                    </div>
+                    <button class="btn btn-default" onclick="py.on_logout(this);">Logout</button>
+                </div>
+            </div>
+        </py:if>
+
+        <!--! Placed at the end of the document so the pages load faster (?) -->
+        <script src="static/js/jquery-2.2.0.min.js" />
+        <script src="static/js/bootstrap-3.3.6.min.js"  />
+
+        <script>
+            $(document).ready(function() {
+                progress_bar = $('.bar-time .progress .progress-bar:visible');
+                setInterval(function() {
+                    progress_bar.first().html(py.elapsed());
+                    progress_bar.first().css('width', py.percent()+'%');
+                    progress_bar.last().html(py.remaining());
+                }, 100);
+            });
+        </script>
+    </body>
+</html>

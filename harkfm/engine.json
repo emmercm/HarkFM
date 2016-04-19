@@ -1,0 +1,11 @@
+{
+    "apis" : {
+        "last.fm": {
+            "key": "",
+            "secret": ""
+        },
+        "gracenote": {
+            "client_id": ""
+        }
+    }
+}

@@ -1,0 +1,228 @@
+{
+    "windows": [
+        {
+            "title": "Audiomack",
+            "enabled": "true",
+            "window": {
+                "title": "^(.* - .*) - Listen \\| Audiomack$"
+            },
+            "regex": {
+                "artist": "(.*) - .*",
+                "track": ".* - (.*)"
+            }
+        },
+        {
+            "title": "Elpis",
+            "enabled": "true",
+            "window": {
+                "title": "^Elpis \\| (.*)$"
+            },
+            "regex": {
+                "artist": "(.*) / .*",
+                "track": ".* / (.*)"
+            }
+        },
+        {
+            "title": "foobar2000",
+            "enabled": "true",
+            "window": {
+                "title": "^(.*) :: foobar2000$"
+            },
+            "regex": {
+                "artist": "(.*) - [^\\[]+( \\[.*\\])?|.*181\\.fm.*",
+                "track": ".* - ([^\\[]+)( \\[.*\\])?|.*181\\.fm.*",
+                "album": ".* - .* \\[(.*)\\]"
+            }
+        },
+        {
+            // MarshallOfSound Google-Play-Music-Desktop-Player-UNOFFICIAL
+            "title": "Google Play Music",
+            "enabled": "true",
+            "icon": "fa fa-google",
+            "window": {
+                "class": "WindowsForms10.Window.8.app.0.2a2cc74_r9_ad1",
+                "title": "(.* - .*)"
+            },
+            "regex": {
+                "artist": ".* - (.*)",
+                "track": "(.*) - .*"
+            }
+        },
+        {
+            "title": "Google Play Music",
+            "enabled": "true",
+            "icon": "fa fa-google",
+            "window": {
+                "title": "^(.* - .*) - (Google Play Music|My Library - Google Play) - [\\w\\s]+$"
+            },
+            "regex": {
+                "artist": ".* - (.*)",
+                "track": "(.*) - .*"
+            }
+        },
+        {
+            "title": "Grooveshark",
+            "enabled": "true",
+            "window": {
+                "title": "^(\\\".*\\\" by .*) \\[[:0-9]+\\ / [:0-9]+[^0]] - [\\w\\s]+$"
+            },
+            "regex": {
+                "artist": "\\\"[^\\\"]+\\\" by (.*)",
+                "track": "\\\"([^\\\"]+)\\\" by .*"
+            }
+        },
+        {
+            // Client
+            "title": "Last.fm",
+            "enabled": "true",
+            "icon": "fa fa-lastfm",
+            "window": {
+                "title": "^(.* \\u25B6 .*) - [^\\-]+ - Last\\.fm Scrobbler$"
+            },
+            "regex": {
+                "artist": "(.*?) \\u25B6 .*",
+                "track": ".*? \\u25B6 (.*)"
+            }
+        },
+        {
+            // Radio
+            "title": "Last.fm",
+            "enabled": "true",
+            "icon": "fa fa-lastfm",
+            "window": {
+                "title": "^(.* - .*) - Last.fm - [\\w\\s]+$"
+            },
+            "regex": {
+                "artist": "(.*?) - .*",
+                "track": ".*? - (.*)"
+            }
+        },
+        {
+            "title": "Pandora",
+            "enabled": "true",
+            "window": {
+                "title": "^(.* - .*)( - )?Pandora Internet Radio$"
+            },
+            "regex": {
+                "artist": "(.*) - .* \\[.*\\]",
+                "track": ".* - (.*) \\[.*\\]",
+                "album": ".* - .* \\[(.*)\\]"
+            }
+        },
+        {
+            // v0.9
+            "title": "Spotify",
+            "enabled": "true",
+            "icon": "fa fa-spotify",
+            "window": {
+                "title": "^Spotify . (.* \\u25B6 .*)"
+            },
+            "regex": {
+                "artist": "(.*?) \\u25B6 .*",
+                "track": ".*? \\u25B6 (.*)"
+            }
+        },
+        {
+            // v1.0
+            "title": "Spotify",
+            "enabled": "true",
+            "icon": "fa fa-spotify",
+            "window": {
+                "class": "SpotifyMainWindow",
+                "title": "(.* - .*)"
+            },
+            "regex": {
+                "artist": "(.*?) - .*",
+                "track": ".*? - (.*)"
+            }
+        },
+        {
+            "title": "VLC",
+            "enabled": "true",
+            "window": {
+                "title": "^(.* - .*) - VLC media player$"
+            },
+            "regex": {
+                "artist": ".* - (.*)",
+                "track": "(.*) - .*"
+            }
+        },
+        {
+            // Web >Artist - Title
+            "title": "Web Browser",
+            "enabled": "true",
+			"icon": "fa fa-globe",
+            "window": {
+                "class": "MozillaWindowClass",
+                "title": "^\\u25B6\\s?(.* - .*)"
+            },
+            "regex": {
+                "artist": "(.*?) - .*",
+                "track": ".*? - (.*)"
+            }
+        },
+        {
+            // Web >Title by Artist
+            "title": "Web Browser",
+            "enabled": "true",
+			"icon": "fa fa-globe",
+            "window": {
+                "class": "MozillaWindowClass",
+                "title": "^\\u25B6\\s?(.* by .*)"
+            },
+            "regex": {
+                "artist": ".* by (.*)",
+                "track": "(.*) by .*"
+            }
+        }
+    ],
+
+    "replace": {
+        "all": [
+            // Special characters
+            [ "[\\´\\’]", "'" ],
+            [ "[\\“\\”]", "\"" ],
+
+            // Featuring
+            [ "(?i)featuring|feat\\.|ft\\.|f/|w/", "Feat." ],
+            [ "(?i)\\(with ([^()]+)\\)", "(Feat. \\1)" ],   // with to feat
+            [ "(?i)Feat\\.([^\\s]+)", "Feat. \\1" ],        // enforce a space
+            [ "(?i)\\[(Feat\\. [^\\]]+)\\]", "(\\1)" ],     // brackets to parenthases
+
+            // Spelling
+
+            // Cuss words
+            [ "(?i)B[i\\*][t\\*][c\\*][h\\*]", "bitch" ],
+            [ "(?i)D[i\\*][c\\*][k\\*]", "dick" ],
+            [ "(?i)F[u\\*][c\\*][k\\*][e\\*][d\\*]", "fucked" ],
+            [ "(?i)F[u\\*][c\\*][k\\*][i\\*][n\\*]", "fuckin" ],
+            [ "(?i)F[u\\*][c\\*][k\\*]", "fuck" ],
+            [ "(?i)N[i\\*][g\\*][g\\*][a\\*][s\\*]", "niggas" ],
+            [ "(?i)N[i\\*][g\\*][g\\*][a\\*]", "nigga" ],
+            [ "(?i)S[h\\*][i\\*][t\\*]", "shit" ]
+        ],
+        "artist": [
+            // Suffixes
+            [ "(?i)(.+), The$", "The \\1" ],
+            [ "(?i)The The", "The" ],
+            [ "(?i)(.+) \\((Pop|Rock)\\)", "\\1" ]
+
+            // Specific
+        ],
+        "track": [
+            // Featuring
+            [ "(?i)(Feat\\. [^()]+) of [^()]+", "\\1" ],   // "of" strip
+            [ "(?i) - (Feat\\. [^()]+)", " (\\1)" ],       // spotify hyphen fix
+            [ "(?i) (Feat\\. [^()]+)", " (\\1)" ],         // enforce parenthases
+
+            // Suffixes
+            [ "(?i) - (Airplay|Album Version|Best Of|Bonus.*|Clean|.*Cover|Dirty|.*Edit|Edited|Explicit|From .+|Full Length|Main|.*Mix|Non-Album Track|Original|Original Version|.*Remaster|Remastered|.*Remastered [0-9]{2,4}|.*Remix|Radio|Single|.*Version)$", "" ],
+            // [ "(?i) - (Acoustic|Interlude|Intro|Live|Outro)$", "" ],
+            [ "(?i) \\(([^()]+)?(Album|Amended|Bonus|Clean|Edit|Edited|Explicit|From.+Soundtrack|Mainstream|Mix|Mix Cut|PG13|Prod|Radio|Remastered|Re-Recorded|Single)([^()]+)?\\)$", "" ],
+            [ "[\\s\\-]+$", "" ]
+
+            // Specific
+        ],
+        "album": []
+    }
+}

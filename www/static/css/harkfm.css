@@ -1,0 +1,210 @@
+/*
+ * Bootstrap overrides
+ */
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F0F0F0;
+}
+
+hr {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-top-color: #CDCDCD;
+}
+
+a {
+    font-weight: bold;
+    color: #D51007;
+}
+a:focus,
+a:hover {
+    color: #840700;
+    text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    margin: 0;
+    line-height: normal;
+}
+
+.navbar {
+    margin: 0;
+    min-height: 0;
+}
+
+.container-fluid {
+    padding: 10px;
+}
+
+.row {
+    margin: 15px 0;
+}
+
+/* Bootstrap rule ordering fix */
+.progress-bar.text-right {
+    text-align: right;
+}
+
+*[class^="col-"] img {
+    width: 100%;
+}
+
+.glyphicon[onclick]:not([onclick=""]),
+.fa[onclick]:not([onclick=""]) {
+    cursor: pointer;
+}
+
+/* WebKit fix */
+.form-horizontal .form-group > label {
+    padding-top: 0;
+    margin-top: 7px;
+}
+
+/*
+ * Custom globals
+ */
+
+.glyphicon,
+.fa {
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+}
+
+.fa.fa-heart,
+.fa.fa-heart-o:hover {
+    color: #D51007;
+}
+.fa.fa-heart-o,
+.fa.fa-heart:hover {
+    color: #333333;
+}
+
+/*
+ * Custom classes
+ */
+
+.bar-app {
+    background: -moz-linear-gradient(top, rgba(219,219,219,1) 0%, rgba(194,194,194,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(219,219,219,1) 0%,rgba(194,194,194,1) 100%);
+    background: linear-gradient(to bottom, rgba(219,219,219,1) 0%,rgba(194,194,194,1) 100%);
+    border-bottom: 1px solid #9F9F9F;
+}
+.bar-app .row {
+    height: 40px;
+    margin: 10px 0;
+}
+.bar-app .row > * {
+    display: inline-block;
+    vertical-align: middle;
+}
+.bar-app .row > *:nth-child(odd) {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.bar-app .row > .btn {
+    position: absolute;
+    right: 0;
+    margin: 3px 13px;
+}
+.bar-app .glyphicon,
+.bar-app .fa {
+    font-size: 34px;
+}
+.bar-app + * {
+    margin-top: 61px;
+}
+
+.bar-time {
+    border-bottom: 1px solid #9F9F9F;
+}
+.bar-time .row {
+    margin: 0;
+}
+.bar-time .progress {
+    height: 22px;
+    margin: 0;
+    border-radius: 0;
+}
+.bar-time .progress,
+.bar-time .progress .progress-bar {
+    background: -moz-linear-gradient(top,  #e4e4e4 0%, #c1c1c1 100%);
+    background: -webkit-linear-gradient(top,  #e4e4e4 0%,#c1c1c1 100%);
+    background: linear-gradient(to bottom,  #e4e4e4 0%,#c1c1c1 100%);
+}
+.bar-time .progress .progress-bar {
+    width: 0%;
+    min-width: 3em;
+    padding: 0 5px;
+    line-height: 22px;
+    font-size: 14px;
+    color: #333333;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+.bar-time .progress .progress-bar:first-child {
+    background: -moz-linear-gradient(top,  #cdcdcd 0%, #b0b0b0 100%);
+    background: -webkit-linear-gradient(top,  #cdcdcd 0%,#b0b0b0 100%);
+    background: linear-gradient(to bottom,  #cdcdcd 0%,#b0b0b0 100%);
+}
+.bar-time .progress .progress-bar.active {
+}
+.bar-time + * {
+    margin-top: 82px;
+}
+
+.info-track {}
+.info-track .glyphicon,
+.info-track .fa {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.img-box {
+    padding: 4px;
+    background-color: #FFFFFF;
+    border: 1px solid #AAAAAA;
+}
+
+.info-artist {
+    background-color: #DEDEDE;
+}
+
+/* http://ilikepixels.co.uk/drop/bubbler/ */
+.bubble {
+    position: relative;
+    margin: 10px 15px 0 15px;
+    padding: 15px;
+    background: #FFFFFF;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: #CDCDCD solid 1px;
+}
+.bubble:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 0 15px 15px;
+    border-color: #FFFFFF transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    margin-left: -15px;
+    top: -15px;
+    left: 15%;
+}
+.bubble:before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 0 15px 15px;
+    border-color: #CDCDCD transparent;
+    display: block;
+    width: 0;
+    z-index: 0;
+    margin-left: -15px;
+    top: -16px;
+    left: 15%;
+}
