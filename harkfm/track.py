@@ -184,7 +184,7 @@ class Track(object):
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'artist' in p and p.endswith(prop)][0], props[prop])
                 except Exception as e:
-                    self.__class__.logger.warn('%s  %s  "%s"', type(e), e, self.artist)
+                    self.__class__.logger.warn('%s  %s', type(e), e)
         harkfm.Util.thread(lfm_do_artist, None, lfm_end)
 
         def lfm_do_track(upd):
@@ -215,7 +215,7 @@ class Track(object):
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'track' in p and p.endswith(prop)][0], props[prop])
                 except Exception as e:
-                    self.__class__.logger.warn('%s  %s  "%s" - "%s"', type(e), e, self.artist, self.track)
+                    self.__class__.logger.warn('%s  %s', type(e), e)
         harkfm.Util.thread(lfm_do_track, None, lfm_end)
 
         def lfm_do_album(upd):
@@ -238,7 +238,7 @@ class Track(object):
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'album' in p and p.endswith(prop)][0], props[prop])
                 except Exception as e:
-                    self.__class__.logger.warn('%s  %s  "%s" - "%s"', type(e), e, self.artist, self.album)
+                    self.__class__.logger.warn('%s  %s', type(e), e)
         harkfm.Util.thread(lfm_do_album, None, lfm_end)
 
     def listen(self):
@@ -262,6 +262,28 @@ class Track(object):
         # Scrobble
         try:
             lfm_network.scrobble(self.artist, self.track, timestamp, self.album)
+            return True
+        except Exception as e:
+            self.__class__.logger.warn('%s  %s', type(e), e)
+        return False
+
+    def love(self):
+        lfm_network = self.__class__.engine.lfm_login()
+        track = pylast.Track(self.artist, self.track, lfm_network, lfm_network.username)
+        try:
+            track.love()
+            self.track_loved = True
+            return True
+        except Exception as e:
+            self.__class__.logger.warn('%s  %s', type(e), e)
+        return False
+
+    def unlove(self):
+        lfm_network = self.__class__.engine.lfm_login()
+        track = pylast.Track(self.artist, self.track, lfm_network, lfm_network.username)
+        try:
+            track.unlove()
+            self.track_loved = False
             return True
         except Exception as e:
             self.__class__.logger.warn('%s  %s', type(e), e)

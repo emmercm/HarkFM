@@ -18,7 +18,6 @@ C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui QtDesigner.ui -o QtDesi
 5. Configure API keys in `engine.json`.
 
 ## Developer Todo
-- Last.fm love/unlove actions.
 - Toast notifications on track change.
 - About application popup window.
 - Configurable options:

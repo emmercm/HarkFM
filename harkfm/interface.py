@@ -53,8 +53,8 @@ class Interface(object):
         class Extensions(QObject):
             @QtCore.pyqtSlot(result=str)
             def elapsed(self):
-                if current is not None:
-                    elapsed = int(time.time() - current.start)
+                if engine.current is not None:
+                    elapsed = math.floor(time.time() - engine.current.start)
                 else:
                     elapsed = 0
                 text = ''
@@ -65,15 +65,15 @@ class Interface(object):
 
             @QtCore.pyqtSlot(result=float)
             def percent(self):
-                if current is not None:
-                    return min(100, round((time.time() - current.start) / current.track_duration * 100, 1))
+                if engine.current is not None:
+                    return min(100, round((time.time() - engine.current.start) / engine.current.track_duration * 100, 1))
                 else:
                     return 0
 
             @QtCore.pyqtSlot(result=str)
             def remaining(self):
-                if current is not None:
-                    remaining = int(current.start + current.track_duration - time.time())
+                if engine.current is not None:
+                    remaining = math.ceil(engine.current.start + engine.current.track_duration - time.time())
                 else:
                     remaining = 0
                 text = '-'
@@ -84,20 +84,32 @@ class Interface(object):
 
             @QtCore.pyqtSlot(result=int)
             def listened(self):
-                if current is not None:
-                    return current.listened
+                if engine.current is not None:
+                    return engine.current.listened
                 else:
                     return 0
 
             @QtCore.pyqtSlot(result=int)
             def queued(self):
-                if current is not None:
-                    return current.queued
+                if engine.current is not None:
+                    return engine.current.queued
                 else:
                     return 0
 
+            @QtCore.pyqtSlot()
+            def love(self):
+                engine.current.love()
+                interface = harkfm.Interface()
+                interface.index()
+
+            @QtCore.pyqtSlot()
+            def unlove(self):
+                engine.current.unlove()
+                interface = harkfm.Interface()
+                interface.index()
+
             @QtCore.pyqtSlot(QWebElement)
-            def on_login(self, form):
+            def login(self, form):
                 storage = harkfm.Storage()
                 lfm_username = form.findFirst('input[name=username]').evaluateJavaScript('this.value')
                 lfm_password = pylast.md5(form.findFirst('input[name=password]').evaluateJavaScript('this.value'))
@@ -113,7 +125,7 @@ class Interface(object):
                     print(e)
 
             @QtCore.pyqtSlot(QWebElement)
-            def on_logout(self):
+            def logout(self):
                 engine = harkfm.Engine()
                 engine.lfm_logout()
 

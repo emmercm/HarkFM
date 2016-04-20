@@ -57,15 +57,16 @@ class Engine(object):
 
     def scrobbler_log(self):
         storage = harkfm.Storage()
+
         def scrobbler_log_do(upd):
             while True:
                 if self.current is not None and self.__class__._lfm_network is not None:
                     elapsed_percent = (time.time() - self.current.start) / self.current.track_duration * 100
                     # Listen
-                    if elapsed_percent >= storage.config_get('TODO/SOMETHING/HERE', 2):
+                    if self.current and elapsed_percent >= storage.config_get('TODO/SOMETHING/HERE', 2):
                         self.current.listen()
                     # Queue scrobble
-                    if not self.current.queued and elapsed_percent >= storage.config_get('TODO/SOMETHING/HERE', 33):
+                    if self.current and not self.current.queued and elapsed_percent >= storage.config_get('TODO/SOMETHING/HERE', 33):
                         storage.config_append('queue', jsonpickle.encode(self.current))
                         self.current.queued = int(time.time())
                 time.sleep(0.5)

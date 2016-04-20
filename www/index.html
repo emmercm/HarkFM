@@ -53,8 +53,10 @@
                             from <a href="${current.album_url}" py:strip="not current.album_url">${current.album}</a>
                             <py:if test="current.album_year">(${current.album_year})</py:if>
                         </div>
-                        <hr />
-                        <span class="fa ${'fa-heart' if current.track_loved else 'fa-heart-o'}" onclick="py.onLove(this);" py:if="type(current.track_loved) is bool"></span>                        <span class="glyphicon glyphicon-tag"></span>
+                        <py:if test="type(current.track_loved) is bool">
+                            <hr />
+                            <span class="fa ${'fa-heart' if current.track_loved else 'fa-heart-o'}" onclick="${'unlove(this);' if current.track_loved else 'love(this);'}"></span>
+                        </py:if>
                         <py:if test="current.track_wiki">
                             <hr />
                             <div>${Markup(current.track_wiki)}</div>
@@ -156,7 +158,7 @@
                         <br />
                         <b>${lastfm['username']}!</b>
                     </div>
-                    <button class="btn btn-default" onclick="py.on_logout(this);">Logout</button>
+                    <button class="btn btn-default" onclick="py.logout(this);">Logout</button>
                 </div>
             </div>
         </py:if>
@@ -174,6 +176,15 @@
                     progress_bar.last().html(py.remaining());
                 }, 100);
             });
+
+            function love(reference) {
+                $(reference).attr({'onclick':'', 'class':'fa fa-spinner fa-pulse'});
+                py.love();
+            }
+            function unlove(reference) {
+                $(reference).attr({'onclick':'', 'class':'fa fa-spinner fa-pulse'});
+                py.unlove();
+            }
         </script>
     </body>
 </html>
