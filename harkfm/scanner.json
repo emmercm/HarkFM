@@ -1,5 +1,22 @@
 {
     "windows": [
+        /*************************/
+        /* SPECIFIC APPLICATIONS */
+        /*************************/
+
+        {
+            // 2016/04/19 v4.01 build 1705
+            "title": "AIMP",
+            "enabled": "true",
+            "window": {
+                "class": "TAIMPMainForm",
+                "title": "(.* - .*)"
+            },
+            "regex": {
+                "artist": "(.*) - .*",
+                "track": ".* - (.*)"
+            }
+        },
         {
             "title": "Audiomack",
             "enabled": "true",
@@ -12,6 +29,7 @@
             }
         },
         {
+            // 2016/04/19 v1.5.0.0
             "title": "Elpis",
             "enabled": "true",
             "window": {
@@ -49,11 +67,12 @@
             }
         },
         {
+            // 2016/04/19 play.google.com
             "title": "Google Play Music",
             "enabled": "true",
             "icon": "fa fa-google",
             "window": {
-                "title": "^(.* - .*) - (Google Play Music|My Library - Google Play) - [\\w\\s]+$"
+                "title": "^(.* - .*) - (Google Play Music|My Library - Google Play)"
             },
             "regex": {
                 "artist": ".* - (.*)",
@@ -61,56 +80,7 @@
             }
         },
         {
-            "title": "Grooveshark",
-            "enabled": "true",
-            "window": {
-                "title": "^(\\\".*\\\" by .*) \\[[:0-9]+\\ / [:0-9]+[^0]] - [\\w\\s]+$"
-            },
-            "regex": {
-                "artist": "\\\"[^\\\"]+\\\" by (.*)",
-                "track": "\\\"([^\\\"]+)\\\" by .*"
-            }
-        },
-        {
-            // Client
-            "title": "Last.fm",
-            "enabled": "true",
-            "icon": "fa fa-lastfm",
-            "window": {
-                "title": "^(.* \\u25B6 .*) - [^\\-]+ - Last\\.fm Scrobbler$"
-            },
-            "regex": {
-                "artist": "(.*?) \\u25B6 .*",
-                "track": ".*? \\u25B6 (.*)"
-            }
-        },
-        {
-            // Radio
-            "title": "Last.fm",
-            "enabled": "true",
-            "icon": "fa fa-lastfm",
-            "window": {
-                "title": "^(.* - .*) - Last.fm - [\\w\\s]+$"
-            },
-            "regex": {
-                "artist": "(.*?) - .*",
-                "track": ".*? - (.*)"
-            }
-        },
-        {
-            "title": "Pandora",
-            "enabled": "true",
-            "window": {
-                "title": "^(.* - .*)( - )?Pandora Internet Radio$"
-            },
-            "regex": {
-                "artist": "(.*) - .* \\[.*\\]",
-                "track": ".* - (.*) \\[.*\\]",
-                "album": ".* - .* \\[(.*)\\]"
-            }
-        },
-        {
-            // v0.9
+            // ????/??/?? v0.9
             "title": "Spotify",
             "enabled": "true",
             "icon": "fa fa-spotify",
@@ -123,7 +93,7 @@
             }
         },
         {
-            // v1.0
+            // 2016/04/19 v1.0
             "title": "Spotify",
             "enabled": "true",
             "icon": "fa fa-spotify",
@@ -148,10 +118,41 @@
             }
         },
         {
+            // 2016/04/19 v3.8.2.3
+            "title": "XMPlay",
+            "enabled": "true",
+            "window": {
+                "class": "XMPLAY-MAIN",
+                "title": "(.* - .*)"
+            },
+            "regex": {
+                "artist": "(.*?) - .*",
+                "track": ".*? - (.*)"
+            }
+        },
+        {
+            // 2016/04/19 youtube.com
+            "title": "YouTube",
+            "enabled": "true",
+            "icon": "fa fa-youtube",
+            "window": {
+                "title": "(.* - .*) - YouTube"
+            },
+            "regex": {
+                "artist": "(.*?) - .*",
+                "track": ".*? - (.*)"
+            }
+        },
+
+        /**********************/
+        /* GENERIC CATCH-ALLS */
+        /**********************/
+
+        {
             // Web >Artist - Title
             "title": "Web Browser",
             "enabled": "true",
-			"icon": "fa fa-globe",
+            "icon": "fa fa-globe",
             "window": {
                 "class": "MozillaWindowClass",
                 "title": "^\\u25B6\\s?(.* - .*)"
@@ -165,7 +166,7 @@
             // Web >Title by Artist
             "title": "Web Browser",
             "enabled": "true",
-			"icon": "fa fa-globe",
+            "icon": "fa fa-globe",
             "window": {
                 "class": "MozillaWindowClass",
                 "title": "^\\u25B6\\s?(.* by .*)"
@@ -216,7 +217,7 @@
             [ "(?i) (Feat\\. [^()]+)", " (\\1)" ],         // enforce parenthases
 
             // Suffixes
-            [ "(?i) - (Airplay|Album Version|Best Of|Bonus.*|Clean|.*Cover|Dirty|.*Edit|Edited|Explicit|From .+|Full Length|Main|.*Mix|Non-Album Track|Original|Original Version|.*Remaster|Remastered|.*Remastered [0-9]{2,4}|.*Remix|Radio|Single|.*Version)$", "" ],
+            [ "(?i) - (Airplay|Album Version|Best Of|Bonus.*|Clean|.*Cover|Dirty|.*Edit|Edited|Explicit|From .+|Full Length|Live From .+|Main|.*Mix|Non-Album Track|Original|Original Version|.*Remaster|Remastered|.*Remastered [0-9]{2,4}|.*Remix|Radio|Single|.*Version)$", "" ],
             // [ "(?i) - (Acoustic|Interlude|Intro|Live|Outro)$", "" ],
             [ "(?i) \\(([^()]+)?(Album|Amended|Bonus|Clean|Edit|Edited|Explicit|From.+Soundtrack|Mainstream|Mix|Mix Cut|PG13|Prod|Radio|Remastered|Re-Recorded|Single)([^()]+)?\\)$", "" ],
             [ "[\\s\\-]+$", "" ]
