@@ -55,6 +55,12 @@ class Engine(object):
                 interface = harkfm.Interface()
                 interface.index()
 
+    @property
+    def scrobbling(self):
+        if self.__class__._thread_scrobbler is not None:
+            return self.__class__._thread_scrobbler.isRunning()
+        return False
+
     def scrobbler_log(self):
         storage = harkfm.Storage()
 

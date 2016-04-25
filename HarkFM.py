@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import time
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from QtDesigner import Ui_MainWindow
@@ -30,4 +31,10 @@ interface = harkfm.Interface(window, ui)
 scanner = harkfm.Scanner()
 
 window.show()
-sys.exit(app.exec_())
+exit_code = app.exec_()
+if exit_code == 0:
+    engine = harkfm.Engine()
+    engine.scrobble()
+    while engine.scrobbling:
+        time.sleep(0.1)
+sys.exit(exit_code)

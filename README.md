@@ -18,9 +18,7 @@ C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui -o QtDesigner.py
 5. Configure API keys in `engine.json`.
 
 ## Developer Todo
-- Scrobble on application exit.
 - Figure out how to compile into Windows binary.
-- About application popup window.
 - Configurable options:
   - Enable/disable scrobbling.
   - Percent to listen to song at.
