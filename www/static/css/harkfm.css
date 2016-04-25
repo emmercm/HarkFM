@@ -103,14 +103,19 @@ h1, h2, h3, h4, h5, h6,
     margin-left: 20px;
     margin-right: 20px;
 }
-.bar-app .row > .btn {
+.bar-app .app-icon .glyphicon,
+.bar-app .app-icon .fa {
+    font-size: 34px;
+}
+.bar-app .row .quick-icons {
     position: absolute;
     right: 0;
-    margin: 3px 13px;
 }
-.bar-app .glyphicon,
-.bar-app .fa {
-    font-size: 34px;
+.bar-app .row .quick-icons .glyphicon,
+.bar-app .row .quick-icons .fa {
+    margin-top: 8px;
+    margin-left: 15px;
+    font-size: 22px;
 }
 .bar-app + * {
     margin-top: 61px;
@@ -169,6 +174,18 @@ h1, h2, h3, h4, h5, h6,
 
 .info-artist {
     background-color: #DEDEDE;
+}
+
+#about .about-icons > * {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 5px;
+    width: 44px;
+    font-size: 22px;
+}
+#about .about-icons .glyphicon,
+#about .about-icons .fa {
+    font-size: 44px;
 }
 
 /* http://ilikepixels.co.uk/drop/bubbler/ */

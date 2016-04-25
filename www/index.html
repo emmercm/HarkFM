@@ -10,13 +10,15 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css" />
 
         <link href="static/css/harkfm.css" rel="stylesheet" />
+
+        <title>HarkFM</title>
     </head>
 
     <body>
         <py:if test="current">
             <div class="navbar navbar-fixed-top bar-app">
                 <div class="row">
-                    <div>
+                    <div class="app-icon">
                         <span class="${current.app_icon or 'glyphicon glyphicon-music'}"></span>
                     </div>
                     <div>
@@ -24,7 +26,10 @@
                         <br />
                         <b>${current.app}</b>
                     </div>
-                    <button class="btn btn-default" onclick="py.onLogout(this);">Logout</button>
+                    <div class="quick-icons">
+                        <span id="button-about" class="fa fa-info-circle" onclick="$('#about').modal();"></span>
+                        <span id="button-logout" class="fa fa-sign-out" onclick="py.onLogout(this);"></span>
+                    </div>
                 </div>
             </div>
 
@@ -55,7 +60,8 @@
                         </div>
                         <py:if test="type(current.track_loved) is bool">
                             <hr />
-                            <span class="fa ${'fa-heart' if current.track_loved else 'fa-heart-o'}" onclick="${'unlove(this);' if current.track_loved else 'love(this);'}"></span>
+                            <span class="fa fa-heart-o" onclick="love(this);" title="Love this track" py:if="not current.track_loved"></span>
+                            <span class="fa fa-heart" onclick="unlove(this);" title="Unlove this track" py:if="current.track_loved"></span>
                         </py:if>
                         <py:if test="current.track_wiki">
                             <hr />
@@ -150,7 +156,7 @@
         <py:if test="not current">
             <div class="navbar navbar-fixed-top bar-app" py:if="'username' in lastfm">
                 <div class="row">
-                    <div>
+                    <div class="app-icon">
                         <span class="fa fa-lastfm"></span>
                     </div>
                     <div>
@@ -158,14 +164,46 @@
                         <br />
                         <b>${lastfm['username']}!</b>
                     </div>
-                    <button class="btn btn-default" onclick="py.logout(this);">Logout</button>
+                    <div class="quick-icons">
+                        <span id="button-about" class="fa fa-info-circle" onclick="$('#about').modal();"></span>
+                        <span id="button-logout" class="fa fa-sign-out" onclick="py.onLogout(this);"></span>
+                    </div>
                 </div>
             </div>
         </py:if>
 
+        <div class="modal fade" id="about" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">About HarkFM</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-3 text-center about-icons">
+                                <a href="https://www.python.org" title="Python">Py</a>
+                                <a href="https://www.qt.io" title="Qt">Qt</a>
+                                <a href="http://www.last.fm/home" title="Last.fm"><span class="fa fa-lastfm"></span></a>
+                                <a href="http://www.gracenote.com" title="Gracenote">Gn</a>
+                                <a href="http://getbootstrap.com" title="Bootstrap"><span class="fa fa-twitter"></span></a>
+                                <a href="http://fortawesome.github.io/Font-Awesome" title="Font Awesome"><span class="fa fa-fort-awesome"></span></a>
+                                <a href="https://github.com/emmercm/HarkFM" title="GitHub"><span class="fa fa-github"></span></a>
+                            </div>
+                            <div class="col-xs-9">
+                                <p><strong>HarkFM</strong></p>
+                                <p>Developed by <a href="https://github.com/emmercm" title="GitHub">Christian Emmer</a>.</p>
+                                <p>Licensed under GPL 3.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!--! Placed at the end of the document so the pages load faster (?) -->
-        <script src="static/js/jquery-2.2.0.min.js" />
-        <script src="static/js/bootstrap-3.3.6.min.js"  />
+        <script src="static/js/jquery-2.2.0.min.js"></script>
+        <script src="static/js/bootstrap-3.3.6.min.js"></script>
 
         <script>
             $(document).ready(function() {

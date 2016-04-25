@@ -13,12 +13,13 @@ pip install genshi pypiwin32 psutil pylast jsonpickle
 ```
 4. Build QtDesigner Python files:
 ```
-C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui QtDesigner.ui -o QtDesigner.py
+C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui -o QtDesigner.py
 ```
 5. Configure API keys in `engine.json`.
 
 ## Developer Todo
-- Toast notifications on track change.
+- Scrobble on application exit.
+- Figure out how to compile into Windows binary.
 - About application popup window.
 - Configurable options:
   - Enable/disable scrobbling.
@@ -27,5 +28,11 @@ C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui QtDesigner.ui -o QtDesi
   - Enable/disable regex replacement.
   - Enable/disable TTS announcements.
 - Application icon.
+- Toast notifications on track change.
+- Ability to skip tracks based on some regex.
+- Display user's event history for current playing artist (make unofficial API functions).
+- Ability to tag tracks.
+- Windows Aero taskbar sub-icon (if possible).
+- Windows Aero taskbar hover mini icons (if possible).
 - Daydream using artist/album images.
-- Display user's event history for current playing artist.
+- Front-end button for YouTube search for top music video.

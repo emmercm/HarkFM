@@ -32,10 +32,14 @@ class Interface(object):
             )
         if self.__class__.qMainWindow is None and qMainWindow is not None:
             self.__class__.qMainWindow = qMainWindow
+
         if self.__class__.qtDesigner is None and qtDesigner is not None:
             self.__class__.qtDesigner = qtDesigner
             self.__class__.qtDesigner.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
             self.__class__.qtDesigner.webView.page().linkClicked.connect(lambda link: webbrowser.open(link.toString()))
+
+            self.__class__.qtDesigner.action_About.triggered.connect(self.on_about)
+
             engine = harkfm.Engine()  # init harkfm.Engine
             lfm_network = engine.lfm_login()
             if lfm_network is None:
@@ -146,3 +150,9 @@ class Interface(object):
         self.__class__.qtDesigner.webView.setHtml(html, QUrl(search_path))
         self.__class__.qtDesigner.webView.page().mainFrame().addToJavaScriptWindowObject('py', ext)
         self.__class__._last_page = file
+
+
+    def on_about(self):
+        button = self.__class__.qtDesigner.webView.page().mainFrame().findFirstElement('#button-about')
+        if button is not None:
+            button.evaluateJavaScript('this.click();')
