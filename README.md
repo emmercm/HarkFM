@@ -7,14 +7,10 @@ An alternative Last.fm client.
 ## Building HarkFM From Source
 1. Install [Python 3.4](https://www.python.org/downloads/)
 2. Install [PyQt5](https://www.riverbankcomputing.com/software/pyqt/download5) for Python 3.4.
-3. Install PyPi dependencies:
-```
-pip install genshi pypiwin32 psutil pylast jsonpickle
-```
-4. Build QtDesigner Python files:
-```
-C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui -o QtDesigner.py
-```
+3. Install PyPi dependencies:<br/>
+`pip install genshi pypiwin32 psutil pylast jsonpickle`
+4. Build QtDesigner Python files:<br/>
+`C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui -o QtDesigner.py`
 5. Configure API keys in `engine.json`.
 
 ## Developer Todo

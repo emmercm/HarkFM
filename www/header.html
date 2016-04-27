@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <!--! Modals need to be defined before navbars -->
+
+    <div class="modal fade" id="about" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">About HarkFM</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-3 text-center about-icons">
+                            <a href="https://www.python.org" title="Python">Py</a>
+                            <a href="https://www.qt.io" title="Qt">Qt</a>
+                            <a href="http://www.last.fm/home" title="Last.fm"><span class="fa fa-lastfm"></span></a>
+                            <a href="http://www.gracenote.com" title="Gracenote">Gn</a>
+                            <a href="http://getbootstrap.com" title="Bootstrap"><span class="fa fa-twitter"></span></a>
+                            <a href="http://fortawesome.github.io/Font-Awesome" title="Font Awesome"><span class="fa fa-fort-awesome"></span></a>
+                            <a href="https://github.com/emmercm/HarkFM" title="GitHub"><span class="fa fa-github"></span></a>
+                        </div>
+                        <div class="col-xs-9">
+                            <p><strong>HarkFM</strong></p>
+                            <p>Developed by <a href="https://github.com/emmercm" title="GitHub">Christian Emmer</a>.</p>
+                            <p>Licensed under GPL 3.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar navbar-fixed-top bar-app">
+        <div class="row">
+            <div class="app-icon">
+                <span class="${current.app_icon or 'glyphicon glyphicon-music'}" py:if="current"></span>
+                <span class="fa fa-lastfm" py:if="not current"></span>
+            </div>
+            <div>
+                <py:if test="not lastfm">
+                    Welcome to <strong>HarkFM!</strong>
+                </py:if>
+                <py:if test="lastfm">
+                    <py:if test="not current">
+                        Hello, <strong>${lastfm['username']}!</strong>
+                    </py:if>
+                    <py:if test="current">
+                        Scrobbling from <strong>${current.app}</strong>
+                    </py:if>
+                </py:if>
+            </div>
+            <div class="quick-icons">
+                <span id="button-about" class="fa fa-info-circle" title="About HarkFM" onclick="$('#about').modal();" keyup="112"></span>
+                <span id="button-logout" class="fa fa-sign-out" title="Log Out" onclick="py.logout(this);" py:if="lastfm"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar navbar-fixed-top bar-time" py:if="current">
+        <div class="row">
+            <div class="progress">
+                <div class="progress-bar text-right" style="width:${current._percent}%;">${current._elapsed}</div>
+                <div class="progress-bar">${current._remaining}</div>
+            </div>
+        </div>
+    </div>
+
+    <!--! Nothing should be after navbars in this file -->
+</html>
