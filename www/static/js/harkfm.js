@@ -23,3 +23,19 @@ function unlove(reference) {
     $(reference).attr({'onclick':'', 'class':'fa fa-spinner fa-pulse'});
     py.unlove();
 }
+
+function save_settings(reference) {
+    var values = new Object();
+    $(reference).closest('.modal-dialog').find('input').each(function() {
+        var $input = $(this);
+        var value = $input.val();
+        switch($input.attr('type')) {
+            case 'checkbox':
+                value = $input.is(':checked');
+                break;
+        }
+        values[$input.attr('name')] = value;
+    });
+    py.save_settings(JSON.stringify(values));
+    $(reference).closest('.modal').modal('hide');
+}

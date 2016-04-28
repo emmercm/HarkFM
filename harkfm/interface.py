@@ -1,4 +1,6 @@
 import copy
+import json
+import logging
 import math
 import os
 import sys
@@ -24,7 +26,12 @@ class Interface(object):
     qMainWindow = None
     qtDesigner = None
 
+    logger = None
+
     def __init__(self, qMainWindow=None, qtDesigner=None):
+        if self.__class__.logger is None:
+            self.__class__.logger = logging.getLogger('root')
+
         if self.__class__.loader is None:
             self.__class__.loader = genshi.template.TemplateLoader(
                 os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), 'www')),
@@ -124,12 +131,21 @@ class Interface(object):
                     interface = harkfm.Interface()
                     interface.index()
                 except Exception as e:
-                    print(e)
+                    self.__class__.logger.error('%s  %s', type(e), e)
 
-            @QtCore.pyqtSlot(QWebElement)
+            @QtCore.pyqtSlot()
             def logout(self):
                 engine = harkfm.Engine()
                 engine.lfm_logout()
+
+            @QtCore.pyqtSlot(str)
+            def save_settings(self, form):
+                form = json.loads(form)
+                storage = harkfm.Storage()
+                for key in form:
+                    storage.config_set('settings/'+key, form[key])
+                interface = harkfm.Interface()
+                interface.index()
 
         ext = Extensions(self.__class__.qMainWindow)
 
@@ -140,11 +156,15 @@ class Interface(object):
             current._elapsed = ext.elapsed()
             current._percent = ext.percent()
             current._remaining = ext.remaining()
-        lastfm = engine.lfm_props()
 
+        # Render page
         template = self.__class__.loader.load(file)
         search_path = 'file:///' + self.__class__.loader.search_path[0].replace('\\', '/') + '/'
-        html = template.generate(current=current, lastfm=lastfm).render('html', doctype='html')
+        html = template.generate(
+            current=current,
+            lastfm=engine.lfm_props(),
+            config=harkfm.Storage.config
+        ).render('html', doctype='html')
         self.__class__.qtDesigner.webView.setHtml(html, QUrl(search_path))
         self.__class__.qtDesigner.webView.page().mainFrame().addToJavaScriptWindowObject('py', ext)
         self.__class__._last_page = file

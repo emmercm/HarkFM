@@ -17,8 +17,10 @@ class Engine(object):
     _thread_scrobbler = None
 
     config = None
-    logger = None
     correct_thread = None
+
+    storage = None
+    logger = None
 
     def __init__(self):
         if self.__class__.config is None:
@@ -26,6 +28,8 @@ class Engine(object):
             json_file = os.path.splitext(__file__)[0] + '.json'
             self.__class__.config = harkfm.Util.json_load(json_file)
 
+        if self.__class__.storage is None:
+            self.__class__.storage = harkfm.Storage()
         if self.__class__.logger is None:
             self.__class__.logger = logging.getLogger('root')
 
@@ -62,28 +66,36 @@ class Engine(object):
         return False
 
     def scrobbler_log(self):
-        storage = harkfm.Storage()
-
         def scrobbler_log_do(upd):
             while True:
-                if self.current is not None and self.__class__._lfm_network is not None:
+                if (
+                    self.current is not None
+                    and self.__class__._lfm_network is not None
+                    and self.__class__.storage.config_get('settings/scrobble/enabled')
+                ):
                     elapsed_percent = (time.time() - self.current.start) / self.current.track_duration * 100
                     # Listen
-                    if self.current and elapsed_percent >= storage.config_get('TODO/SOMETHING/HERE', 2):
+                    if (
+                        self.current
+                        and not self.current.listened
+                        and elapsed_percent >= self.__class__.storage.config_get('settings/scrobble/listen_percent')
+                    ):
                         self.current.listen()
                     # Queue scrobble
-                    if self.current and not self.current.queued and elapsed_percent >= storage.config_get('TODO/SOMETHING/HERE', 33):
-                        storage.config_append('queue', jsonpickle.encode(self.current))
+                    if (
+                        self.current
+                        and not self.current.queued
+                        and elapsed_percent >= self.__class__.storage.config_get('settings/scrobble/scrobble_percent')
+                    ):
+                        self.__class__.storage.config_append('queue', jsonpickle.encode(self.current))
                         self.current.queued = int(time.time())
                 time.sleep(0.5)
         if self.__class__._thread_scrobbler_log is None:
             self.__class__._thread_scrobbler_log = harkfm.Util.thread(scrobbler_log_do, None, None)
 
     def scrobble(self):
-        storage = harkfm.Storage()
-
         def scrobble_do(upd):
-            queue = storage.config_get('queue')
+            queue = self.__class__.storage.config_get('queue')
             if type(queue) is list and len(queue) > 0:
                 while queue:
                     # Consume and scrobble
@@ -92,16 +104,17 @@ class Engine(object):
                     if not track.scrobble():
                         queue.insert(0, item)
                         break
-                storage.config_set('queue', queue)
-        if self.__class__._lfm_network is not None and \
-                (self.__class__._thread_scrobbler is None or not self.__class__._thread_scrobbler.isRunning()):
+                        self.__class__.storage.config_set('queue', queue)
+        if (
+            self.__class__._lfm_network is not None
+            and self.__class__._thread_scrobbler is None or not self.__class__._thread_scrobbler.isRunning()
+        ):
             self.__class__._thread_scrobbler = harkfm.Util.thread(scrobble_do, None, None)
 
     def lfm_login(self):
-        storage = harkfm.Storage()
         if self.__class__._lfm_network is None:
-            username = storage.config_get('apis/last.fm/username')
-            session_key = storage.config_get('apis/last.fm/session_key')
+            username = self.__class__.storage.config_get('apis/last.fm/username')
+            session_key = self.__class__.storage.config_get('apis/last.fm/session_key')
             if session_key is not None:
                 api_key = harkfm.Engine.config['apis']['last.fm']['key']
                 api_secret = harkfm.Engine.config['apis']['last.fm']['secret']
@@ -119,16 +132,15 @@ class Engine(object):
                 user = self.__class__._lfm_network.get_authenticated_user()
                 if user is not None:
                     self.__class__._lfm_network.username = user.get_name()
-                    storage.config_set('apis/last.fm/username', self.__class__._lfm_network.username)
+                    self.__class__.storage.config_set('apis/last.fm/username', self.__class__._lfm_network.username)
             except Exception as e:
                 self.__class__.logger.warn('%s  %s', type(e), e)
 
         return self.__class__._lfm_network
 
     def lfm_logout(self):
-        storage = harkfm.Storage()
-        storage.config_set('apis/last.fm/username', None)
-        storage.config_set('apis/last.fm/session_key', None)
+        self.__class__.storage.config_set('apis/last.fm/username', None)
+        self.__class__.storage.config_set('apis/last.fm/session_key', None)
         self.__class__._lfm_network = None
         self.current = None
         interface = harkfm.Interface()
@@ -141,7 +153,12 @@ class Engine(object):
             return self.__class__._lfm_network.__dict__
 
     def tts(self):
-        if self.current and self.current.track and self.current.artist:
+        if (
+            self.current
+            and self.current.track
+            and self.current.artist
+            and self.__class__.storage.config_get('settings/tts/enabled')
+        ):
             speech = self.current.track + ' by ' + self.current.artist
             if os.name == 'nt':
                 if self.__class__._tts is None:

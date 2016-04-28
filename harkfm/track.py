@@ -16,6 +16,7 @@ class Track(object):
     def __init__(self, props=None):
         if props is None:
             props = {}
+
         if self.__class__.storage is None:
             self.__class__.storage = harkfm.Storage()
         if self.__class__.engine is None:
@@ -129,20 +130,25 @@ class Track(object):
         def gn_end():
             self.__correct_lfm()
 
-        if not self._corrected_gn:
-            harkfm.Util.thread(gn_do, gn_upd, gn_end)
-            self._corrected_gn = True
-        else:
-            self.__correct_lfm()
+        if (
+            self._corrected_gn
+            or not self.__class__.storage.config_get('settings/correct/gracenote')
+        ):
+            return self.__correct_lfm()
+
+        harkfm.Util.thread(gn_do, gn_upd, gn_end)
+        self._corrected_gn = True
 
     def __correct_lfm(self):
         lfm_network = self.__class__.engine.lfm_login()
-        if lfm_network is None:
+        if (
+            lfm_network is None
+            or self._corrected_lfm
+            or not self.__class__.storage.config_get('settings/correct/last.fm')
+        ):
             return
-        if self._corrected_lfm:
-            return
-        self._corrected_lfm = True
 
+        self._corrected_lfm = True
         lfm_count = 0
 
         def lfm_end():

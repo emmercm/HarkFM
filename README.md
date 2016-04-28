@@ -5,7 +5,7 @@ An alternative Last.fm client.
 1. Download the latest [release](https://github.com/emmercm/HarkFM/releases).
 
 ## Building HarkFM From Source
-1. Install [Python 3.4](https://www.python.org/downloads/)
+1. Install [Python 3.4](https://www.python.org/downloads/).
 2. Install [PyQt5](https://www.riverbankcomputing.com/software/pyqt/download5) for Python 3.4.
 3. Install PyPi dependencies:<br/>
 `pip install genshi pypiwin32 psutil pylast jsonpickle`
@@ -22,11 +22,12 @@ An alternative Last.fm client.
   - Enable/disable regex replacement.
   - Enable/disable TTS announcements.
 - Application icon.
+- Put a timer on harkfm.Storage save (don't thrash multiple updates in a row).
 - Toast notifications on track change.
 - Ability to skip tracks based on some regex.
 - Display user's event history for current playing artist (make unofficial API functions).
 - Ability to tag tracks.
-- Windows Aero taskbar sub-icon (if possible).
-- Windows Aero taskbar hover mini icons (if possible).
-- Daydream using artist/album images.
+- Windows Aero taskbar sub-icon (if possible with Qt).
+- Windows Aero taskbar hover mini icons (if possible with Qt).
+- Daydream window with popular artists/tracks/albums when not playing anything.
 - Front-end button for YouTube search for top music video.

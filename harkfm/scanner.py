@@ -12,23 +12,28 @@ import harkfm
 class Scanner(object):
     _config = None
 
+    storage = None
+
     def __init__(self):
-        if self._config is None:
+        if self.__class__._config is None:
             # Parse JSON config
             json_file = os.path.splitext(__file__)[0] + '.json'
-            self._config = harkfm.Util.json_load(json_file)
+            self.__class__._config = harkfm.Util.json_load(json_file)
             # Compile JSON config
-            if 'windows' in self._config:
-                for window_id, window in enumerate(self._config['windows']):
+            if 'windows' in self.__class__._config:
+                for window_id, window in enumerate(self.__class__._config['windows']):
                     for prop in window['window']:
-                        self._config['windows'][window_id]['window'][prop] = re.compile(window['window'][prop])
+                        self.__class__._config['windows'][window_id]['window'][prop] = re.compile(window['window'][prop])
                     for prop in window['regex']:
-                        self._config['windows'][window_id]['regex'][prop] = re.compile(window['regex'][prop])
-            if 'replace' in self._config:
-                for category in self._config['replace']:
-                    for replace_id, replace in enumerate(self._config['replace'][category]):
-                        self._config['replace'][category][replace_id][0] = re.compile(
-                            self._config['replace'][category][replace_id][0])
+                        self.__class__._config['windows'][window_id]['regex'][prop] = re.compile(window['regex'][prop])
+            if 'replace' in self.__class__._config:
+                for category in self.__class__._config['replace']:
+                    for replace_id, replace in enumerate(self.__class__._config['replace'][category]):
+                        self.__class__._config['replace'][category][replace_id][0] = re.compile(
+                            self.__class__._config['replace'][category][replace_id][0])
+
+        if self.__class__.storage is None:
+            self.__class__.storage = harkfm.Storage()
 
         class ScannerThread(QThread):
             updated = QtCore.pyqtSignal(dict)
@@ -49,6 +54,9 @@ class Scanner(object):
                                 import win32gui
 
                                 def win_search(hwnd, win):
+                                    # Possibility of window closing in the middle of this enum
+                                    if not win32gui.IsWindow(hwnd):
+                                        return
                                     # Get window properties
                                     w_class = win32gui.GetClassName(hwnd)
                                     w_text = win32gui.GetWindowText(hwnd)
@@ -112,10 +120,11 @@ class Scanner(object):
                                 for prop in window['regex']:
                                     props[prop] = harkfm.Util.regex(window['regex'][prop], w_text)
                                     # Do replacements
-                                    for replace in self.scanner._config['replace']['all']:
-                                        props[prop] = re.sub(replace[0], replace[1], props[prop])
-                                    for replace in self.scanner._config['replace'][prop]:
-                                        props[prop] = re.sub(replace[0], replace[1], props[prop])
+                                    if self.scanner.storage.config_get('settings/correct/scanner'):
+                                        for replace in self.scanner._config['replace']['all']:
+                                            props[prop] = re.sub(replace[0], replace[1], props[prop])
+                                        for replace in self.scanner._config['replace'][prop]:
+                                            props[prop] = re.sub(replace[0], replace[1], props[prop])
 
                                 self.updated.emit(props)
 
