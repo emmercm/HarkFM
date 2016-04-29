@@ -95,6 +95,7 @@ class Engine(object):
 
     def scrobble(self):
         def scrobble_do(upd):
+            harkfm.Track()  # init static classes
             queue = self.__class__.storage.config_get('queue')
             if type(queue) is list and len(queue) > 0:
                 while queue:
@@ -104,7 +105,7 @@ class Engine(object):
                     if not track.scrobble():
                         queue.insert(0, item)
                         break
-                        self.__class__.storage.config_set('queue', queue)
+                self.__class__.storage.config_set('queue', queue)
         if (
             self.__class__._lfm_network is not None
             and self.__class__._thread_scrobbler is None or not self.__class__._thread_scrobbler.isRunning()
