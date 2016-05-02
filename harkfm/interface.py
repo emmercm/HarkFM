@@ -143,6 +143,8 @@ class Interface(object):
                 form = json.loads(form)
                 storage = harkfm.Storage()
                 for key in form:
+                    if type(form[key]) is str and form[key].isdigit():
+                        form[key] = int(form[key])
                     storage.config_set('settings/'+key, form[key])
                 interface = harkfm.Interface()
                 interface.index()

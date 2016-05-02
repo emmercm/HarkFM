@@ -15,14 +15,9 @@ An alternative Last.fm client.
 
 ## Developer Todo
 - Figure out how to compile into Windows binary.
-- Configurable options:
-  - Enable/disable scrobbling.
-  - Percent to listen to song at.
-  - Percent to scrobble song at.
-  - Enable/disable regex replacement.
-  - Enable/disable TTS announcements.
+- Put current Last.fm username in window title.
 - Application icon.
-- Put a timer on harkfm.Storage save (don't thrash multiple updates in a row).
+- Put a timer on harkfm.Storage save (don't thrash HDD with multiple updates in a row).
 - Toast notifications on track change.
 - Ability to skip tracks based on some regex.
 - Display user's event history for current playing artist (make unofficial API functions).

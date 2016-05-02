@@ -78,14 +78,14 @@ class Engine(object):
                     if (
                         self.current
                         and not self.current.listened
-                        and elapsed_percent >= self.__class__.storage.config_get('settings/scrobble/listen_percent')
+                        and elapsed_percent >= float(self.__class__.storage.config_get('settings/scrobble/listen_percent'))
                     ):
                         self.current.listen()
                     # Queue scrobble
                     if (
                         self.current
                         and not self.current.queued
-                        and elapsed_percent >= self.__class__.storage.config_get('settings/scrobble/scrobble_percent')
+                        and elapsed_percent >= float(self.__class__.storage.config_get('settings/scrobble/scrobble_percent'))
                     ):
                         self.__class__.storage.config_append('queue', jsonpickle.encode(self.current))
                         self.current.queued = int(time.time())

@@ -46,6 +46,10 @@ h1, h2, h3, h4, h5, h6,
     margin-bottom: 0;
 }
 
+.form-horizontal .control-label {
+    padding-top: 7px;
+}
+
 .btn-primary {
    color: #ffffff;
    background-color: #d51007;

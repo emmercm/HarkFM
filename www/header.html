@@ -39,43 +39,59 @@
                     <h4 class="modal-title">Settings</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="scrobble/enabled" py:attrs="{'checked':'checked' if config['settings']['scrobble']['enabled'] else ''}" /> Enable scrobbling
-                                </label>
+                    <form class="form-horizontal">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="scrobble/enabled" py:attrs="{'checked':'checked' if config['settings']['scrobble']['enabled'] else ''}" /> Enable scrobbling
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <label class="col-sm-3 col-xs-4 control-label">Listen at:</label>
+                                    <div class="col-sm-9 col-xs-8 input-group">
+                                        <input type="number" name="scrobble/listen_percent" min="1" max="25" value="${config['settings']['scrobble']['listen_percent']}" class="form-control" />
+                                        <div class="input-group-addon">%</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="col-sm-3 col-xs-4 control-label">Scrobble at:</label>
+                                    <div class="col-sm-9 col-xs-8 input-group">
+                                        <input type="number" name="scrobble/scrobble_percent" min="25" max="100" value="${config['settings']['scrobble']['scrobble_percent']}" class="form-control" />
+                                        <div class="input-group-addon">%</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="correct/scanner" py:attrs="{'checked':'checked' if config['settings']['correct']['scanner'] else ''}" /> Enable window scanner track correction
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="correct/gracenote" py:attrs="{'checked':'checked' if config['settings']['correct']['gracenote'] else ''}" /> Enable <a href="http://www.gracenote.com">Gracenote</a> track correction
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="correct/last.fm" py:attrs="{'checked':'checked' if config['settings']['correct']['last.fm'] else ''}" /> Enable <a href="http://www.last.fm/home">Last.fm</a> track correction
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="tts/enabled" py:attrs="{'checked':'checked' if config['settings']['tts']['enabled'] else ''}" /> Enable verbal track announcements
-                                </label>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="correct/scanner" py:attrs="{'checked':'checked' if config['settings']['correct']['scanner'] else ''}" /> Enable window scanner track correction
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="correct/gracenote" py:attrs="{'checked':'checked' if config['settings']['correct']['gracenote'] else ''}" /> Enable <a href="http://www.gracenote.com">Gracenote</a> track correction
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="correct/last.fm" py:attrs="{'checked':'checked' if config['settings']['correct']['last.fm'] else ''}" /> Enable <a href="http://www.last.fm/home">Last.fm</a> track correction
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="tts/enabled" py:attrs="{'checked':'checked' if config['settings']['tts']['enabled'] else ''}" /> Enable verbal track announcements
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
