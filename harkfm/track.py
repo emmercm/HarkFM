@@ -1,5 +1,6 @@
 import logging
 import time
+import xml.etree.ElementTree as ET
 
 import lib.pygn as pygn
 import pylast
@@ -158,33 +159,57 @@ class Track(object):
                 if self.__class__.engine.lfm_login() is not None:
                     self.__class__.interface.index()
 
+        # Perform a pylast request and return an ElementTree
+        def request(method, params):
+            try:
+                lfm_network = self.__class__.engine.lfm_login()
+                params['autocorrect'] = 1
+                params['username'] = lfm_network.username
+                return ET.fromstring(pylast._Request(lfm_network, method, params).execute(False).toxml())
+            except Exception as e:
+                self.__class__.logger.warn('%s  %s', type(e), e)
+
+        # Return ElementTree nodes given an XPath, to be used with request()
+        def xnodes(node, path):
+            try:
+                return node.findall(path)
+            except Exception as e:
+                self.__class__.logger.warn('%s  %s', type(e), e)
+            return []
+
+        # Return the first ElementTree value given an XPath, to be used with request()
+        def xvalue(node, path):
+            try:
+                found = node.findall(path)
+                if len(found):
+                    return found[0].text
+            except Exception as e:
+                self.__class__.logger.warn('%s  %s', type(e), e)
+            return ''
+
         def lfm_do_artist(upd):
-            nonlocal lfm_network
             if self.artist:
                 try:
-                    # Do pylast.Artist functions manually to reduce API hits
-                    artist = pylast._Request(lfm_network, 'artist.getInfo', {
-                        'artist': self.artist,
-                        'autocorrect': 1,
-                        'username': lfm_network.username
-                    }).execute(False)
+                    artist = request('artist.getInfo', {
+                        'artist': self.artist
+                    })
                     props = {
-                        'corrected': pylast._extract(artist, 'name'),
-                        'url': pylast._extract(artist, 'url'),
-                        'img': pylast._extract_all(artist, 'image')[-2],
-                        'listeners': pylast._number(pylast._extract(artist, 'listeners')),
-                        'plays_global': pylast._number(pylast._extract(artist, 'playcount')),
+                        'corrected': xvalue(artist, './artist/name'),
+                        'url': xvalue(artist, './artist/url'),
+                        'img': xvalue(artist, './artist/image[last()-1]'),
+                        'listeners': int(xvalue(artist, './artist/stats/listeners') or 0),
+                        'plays_global': int(xvalue(artist, './artist/stats/playcount') or 0),
                         'similar': [{
-                            'name': pylast._extract(a, 'name'),
-                            'url': pylast._extract(a, 'url'),
-                            'img': pylast._extract_all(a, 'image')[-2]
-                        } for a in artist.getElementsByTagName('similar')[0].getElementsByTagName('artist')[:4]],
+                            'name': xvalue(a, 'name'),
+                            'url': xvalue(a, 'url'),
+                            'img': xvalue(a, 'image[last()-1]')
+                        } for a in xnodes(artist, './artist/similar/artist')[:4]],
                         'tags': [{
-                            'name': pylast._extract(t, 'name'),
-                            'url': pylast._extract(t, 'url')
-                        } for t in artist.getElementsByTagName('tag')[:5]],
-                        'wiki': pylast._extract(artist, 'summary'),
-                        'plays': pylast._number(pylast._extract(artist, 'userplaycount')),
+                            'name': xvalue(t, 'name'),
+                            'url': xvalue(t, 'url')
+                        } for t in xnodes(artist, './artist/tags/tag')[:5]],
+                        'wiki': xvalue(artist, './artist/bio/summary'),
+                        'plays': int(xvalue(artist, './artist/stats/userplaycount') or 0),
                     }
                     for prop in props:
                         if props[prop]:
@@ -194,28 +219,24 @@ class Track(object):
         harkfm.Util.thread(lfm_do_artist, None, lfm_end)
 
         def lfm_do_track(upd):
-            nonlocal lfm_network
             if self.artist and self.track:
                 self.track_loved = False
                 try:
-                    # Do pylast.Track functions manually to reduce API hits
-                    track = pylast._Request(lfm_network, 'track.getInfo', {
+                    track = request('track.getInfo', {
                         'track': self.track,
-                        'artist': self.artist,
-                        'autocorrect': 1,
-                        'username': lfm_network.username
-                    }).execute(False)
+                        'artist': self.artist
+                    })
                     props = {
-                        'corrected': pylast._extract(track, 'name'),
-                        'url': pylast._extract(track, 'url'),
-                        'wiki': pylast._extract(track, 'summary'),
-                        'duration': pylast._number(pylast._extract(track, 'duration')) / 1000,
-                        'plays': pylast._number(pylast._extract(track, 'userplaycount')),
-                        'loved': bool(pylast._number(pylast._extract(track, 'userloved'))),
+                        'corrected': xvalue(track, './track/name'),
+                        'url': xvalue(track, './track/url'),
+                        'wiki': xvalue(track, './track/summary'),
+                        'duration': int(xvalue(track, './track/duration') or 0) / 1000,
+                        'plays': int(xvalue(track, './track/userplaycount') or 0),
+                        'loved': bool(int(xvalue(track, './track/userloved') or 0)),
                         'tags': [{
-                            'name': pylast._extract(t, 'name'),
-                            'url': pylast._extract(t, 'url')
-                         } for t in track.getElementsByTagName('tag')[:5]]
+                            'name': xvalue(t, 'name'),
+                            'url': xvalue(t, 'url')
+                        } for t in xnodes(track, './track/toptags/tag')[:5]]
                     }
                     for prop in props:
                         if props[prop]:
@@ -225,20 +246,16 @@ class Track(object):
         harkfm.Util.thread(lfm_do_track, None, lfm_end)
 
         def lfm_do_album(upd):
-            nonlocal lfm_network
             if self.artist and self.album:
                 try:
-                    # Do pylast.Album functions manually to reduce API hits
-                    album = pylast._Request(lfm_network, 'album.getInfo', {
+                    album = request('album.getInfo', {
                         'artist': self.artist,
-                        'album': self.album,
-                        'autocorrect': 1,
-                        'username': lfm_network.username
-                    }).execute(False)
+                        'album': self.album
+                    })
                     props = {
-                        'corrected': pylast._extract(album, 'name'),
-                        'img': pylast._extract_all(album, 'image')[-2],
-                        'url': pylast._extract(album, 'url')
+                        'corrected': xvalue(album, 'name'),
+                        'img': xvalue(album, './album/image[last()-1]'),
+                        'url': xvalue(album, './album/url')
                     }
                     for prop in props:
                         if props[prop]:
