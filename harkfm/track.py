@@ -179,12 +179,13 @@ class Track(object):
 
         # Return the first ElementTree value given an XPath, to be used with request()
         def xvalue(node, path):
-            try:
-                found = node.findall(path)
-                if len(found):
-                    return found[0].text
-            except Exception as e:
-                self.__class__.logger.warn('%s  %s', type(e), e)
+            if node is not None:
+                try:
+                    found = node.findall(path)
+                    if len(found):
+                        return found[0].text
+                except Exception as e:
+                    self.__class__.logger.warn('%s  %s', type(e), e)
             return ''
 
         def lfm_do_artist(upd):
