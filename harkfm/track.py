@@ -112,13 +112,14 @@ class Track(object):
                     if type(grace) is pygn.gnmetadata:
                         self.artist_img = grace['artist_image_url']
                         self.artist_url = grace['artist_bio_url']
-                        self._album_corrected = grace['album_title']
                         self.album_img = grace['album_art_url']
                         if grace['album_year'] and int(grace['album_year']) > 1900:
                             self.album_year = grace['album_year']
                         self.mood = [grace['mood'][key]['TEXT'] for key in sorted(grace['mood'])]
                         self.genre = [grace['genre'][key]['TEXT'] for key in sorted(grace['genre'])]
                         self.tempo = [grace['tempo'][key]['TEXT'] for key in sorted(grace['tempo'])]
+                        if self.__class__.storage.config_get('settings/correct/gracenote'):
+                            self._album_corrected = grace['album_title']
                 except Exception as e:
                     # urllib.error.URLError "getaddrinfo failed"
                     self.__class__.logger.warn('%s  %s', type(e), e)
@@ -131,10 +132,7 @@ class Track(object):
         def gn_end():
             self.__correct_lfm()
 
-        if (
-            self._corrected_gn
-            or not self.__class__.storage.config_get('settings/correct/gracenote')
-        ):
+        if self._corrected_gn:
             return self.__correct_lfm()
 
         harkfm.Util.thread(gn_do, gn_upd, gn_end)
@@ -142,11 +140,7 @@ class Track(object):
 
     def __correct_lfm(self):
         lfm_network = self.__class__.engine.lfm_login()
-        if (
-            lfm_network is None
-            or self._corrected_lfm
-            or not self.__class__.storage.config_get('settings/correct/last.fm')
-        ):
+        if lfm_network is None or self._corrected_lfm:
             return
 
         self._corrected_lfm = True
@@ -195,7 +189,6 @@ class Track(object):
                         'artist': self.artist
                     })
                     props = {
-                        'corrected': xvalue(artist, './artist/name'),
                         'url': xvalue(artist, './artist/url'),
                         'img': xvalue(artist, './artist/image[last()-1]'),
                         'listeners': int(xvalue(artist, './artist/stats/listeners') or 0),
@@ -212,6 +205,8 @@ class Track(object):
                         'wiki': xvalue(artist, './artist/bio/summary'),
                         'plays': int(xvalue(artist, './artist/stats/userplaycount') or 0),
                     }
+                    if self.__class__.storage.config_get('settings/correct/last.fm'):
+                        props['corrected'] = xvalue(artist, './artist/name')
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'artist' in p and p.endswith(prop)][0], props[prop])
@@ -228,7 +223,6 @@ class Track(object):
                         'artist': self.artist
                     })
                     props = {
-                        'corrected': xvalue(track, './track/name'),
                         'url': xvalue(track, './track/url'),
                         'wiki': xvalue(track, './track/summary'),
                         'duration': int(xvalue(track, './track/duration') or 0) / 1000,
@@ -239,6 +233,8 @@ class Track(object):
                             'url': xvalue(t, 'url')
                         } for t in xnodes(track, './track/toptags/tag')[:5]]
                     }
+                    if self.__class__.storage.config_get('settings/correct/last.fm'):
+                        props['corrected'] = xvalue(track, './track/name')
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'track' in p and p.endswith(prop)][0], props[prop])
@@ -254,10 +250,11 @@ class Track(object):
                         'album': self.album
                     })
                     props = {
-                        'corrected': xvalue(album, 'name'),
                         'img': xvalue(album, './album/image[last()-1]'),
                         'url': xvalue(album, './album/url')
                     }
+                    if self.__class__.storage.config_get('settings/correct/last.fm'):
+                        props['corrected'] = xvalue(album, 'name')
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'album' in p and p.endswith(prop)][0], props[prop])
