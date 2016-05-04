@@ -188,6 +188,7 @@ class Track(object):
                     artist = request('artist.getInfo', {
                         'artist': self.artist
                     })
+                    # Set artist properties
                     props = {
                         'url': xvalue(artist, './artist/url'),
                         'img': xvalue(artist, './artist/image[last()-1]'),
@@ -218,6 +219,7 @@ class Track(object):
             if self.artist and self.track:
                 self.track_loved = False
                 try:
+                    # Set track properties
                     track = request('track.getInfo', {
                         'track': self.track,
                         'artist': self.artist
@@ -238,6 +240,17 @@ class Track(object):
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'track' in p and p.endswith(prop)][0], props[prop])
+                    # Set album properties (if non-existent)
+                    if self.__class__.storage.config_get('settings/correct/last.fm'):
+                        props = {
+                            'corrected': xvalue(track, './track/album/title'),
+                            'img': xvalue(track, './track/album/image[last()-1]'),
+                            'url': xvalue(track, './track/album/url')
+                        }
+                        for prop in props:
+                            if props[prop]:
+                                setattr(self, [p for p in dir(self) if 'album' in p and p.endswith(prop)][0],
+                                        props[prop])
                 except Exception as e:
                     self.__class__.logger.warn('%s  %s', type(e), e)
         harkfm.Util.thread(lfm_do_track, None, lfm_end)
@@ -245,6 +258,7 @@ class Track(object):
         def lfm_do_album(upd):
             if self.artist and self.album:
                 try:
+                    # Set album properties
                     album = request('album.getInfo', {
                         'artist': self.artist,
                         'album': self.album
