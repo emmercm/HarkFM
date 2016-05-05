@@ -7,6 +7,7 @@
 
         <link href="static/css/bootstrap-3.3.6.min.css" rel="stylesheet" />
         <link href="static/css/font-awesome-4.5.0.min.css" rel="stylesheet" />
+        <link href="static/css/flag-icon-2.1.0.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css" />
 
         <link href="static/css/harkfm.css" rel="stylesheet" />
@@ -23,7 +24,9 @@
                     <div class="col-xs-4" py:if="current.album_img">
                         <div class="img-box">
                             <a href="${current.album_url}" py:strip="not current.album_url">
-                                <img src="${current.album_img}" />
+                                <a href="${current.album_url}" py:strip="not current.album_url">
+                                    <img src="${current.album_img}" />
+                                </a>
                             </a>
                         </div>
                     </div>
@@ -65,8 +68,41 @@
             <div class="container-fluid info-artist" py:if="current.artist_img or current.artist_wiki or current.artist_tags">
                 <div class="row">
                     <div class="col-xs-12">
-                        <h3>
-                            <a href="${current.artist_url}" py:strip="not current.artist_url">${current.artist}</a>
+                        <h3 class="row no-margin">
+                            <div class="${'col-xs-9' if current.artist_gender or current.artist_country else 'col-xs-12'} no-padding">
+                                <a href="${current.artist_url}" py:strip="not current.artist_url">${current.artist}</a>
+                            </div>
+                            <div class="col-xs-3 no-padding text-right" py:if="current.artist_gender or current.artist_country">
+                                <span py:if="current.artist_country" py:choose="current.artist_country" title="${current.artist_country}">
+                                    <py:when test="'Australia'"><span class="flag-icon flag-icon-au"></span></py:when>
+                                    <py:when test="'Canada'"><span class="flag-icon flag-icon-ca"></span></py:when>
+                                    <py:when test="'China'"><span class="flag-icon flag-icon-cn"></span></py:when>
+                                    <py:when test="'France'"><span class="flag-icon flag-icon-fr"></span></py:when>
+                                    <py:when test="'Germany'"><span class="flag-icon flag-icon-de"></span></py:when>
+                                    <py:when test="'Iceland'"><span class="flag-icon flag-icon-is"></span></py:when>
+                                    <py:when test="'Ireland'"><span class="flag-icon flag-icon-ie"></span></py:when>
+                                    <py:when test="'Japan'"><span class="flag-icon flag-icon-jp"></span></py:when>
+                                    <py:when test="'Netherlands'"><span class="flag-icon flag-icon-nl"></span></py:when>
+                                    <py:when test="'South Africa'"><span class="flag-icon flag-icon-za"></span></py:when>
+                                    <py:when test="'South Korea'"><span class="flag-icon flag-icon-kr"></span></py:when>
+                                    <py:when test="'Sweden'"><span class="flag-icon flag-icon-se"></span></py:when>
+                                    <py:when test="'Taiwan'"><span class="flag-icon flag-icon-tw"></span></py:when>
+                                    <py:when test="'United Kingdom'"><span class="flag-icon flag-icon-gb"></span></py:when>
+                                    <py:when test="'United States'"><span class="flag-icon flag-icon-us"></span></py:when>
+                                    <py:otherwise>${current.artist_country.upper()[:3]}</py:otherwise>
+                                </span>
+                                <span py:if="current.artist_gender" py:choose="current.artist_gender" title="${current.artist_gender}">
+                                    <py:when test="'Male'"><span class="fa fa-male"></span></py:when>
+                                    <py:when test="'Male Duo'"><span class="fa fa-male"></span><span class="fa fa-male"></span></py:when>
+                                    <py:when test="'Male Group'"><span class="fa fa-male"></span><span class="fa fa-male"></span><span class="fa fa-plus"></span></py:when>
+                                    <py:when test="'Female'"><span class="fa fa-female"></span></py:when>
+                                    <py:when test="'Female Duo'"><span class="fa fa-female"></span><span class="fa fa-female"></span></py:when>
+                                    <py:when test="'Female Group'"><span class="fa fa-female"></span><span class="fa fa-female"></span><span class="fa fa-plus"></span></py:when>
+                                    <py:when test="'Mixed Duo'"><span class="fa fa-male"></span><span class="fa fa-female"></span></py:when>
+                                    <py:when test="'Mixed Group'"><span class="fa fa-male"></span><span class="fa fa-female"></span><span class="fa fa-plus"></span></py:when>
+                                    <py:otherwise>${''.join([c[0].upper() for c in current.artist_gender.split()])}</py:otherwise>
+                                </span>
+                            </div>
                         </h3>
                     </div>
                 </div>

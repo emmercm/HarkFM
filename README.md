@@ -14,6 +14,7 @@ An alternative Last.fm client.
 5. Configure API keys in `engine.json`.
 
 ## Developer Todo
+- Make Google font offline.
 - Figure out how to compile into Windows binary.
 - Put current Last.fm username in window title.
 - Application icon.

@@ -40,6 +40,8 @@ class Track(object):
         self.artist_plays = 0
         self.artist_tags = []
         self.artist_similar = []
+        self.artist_gender = None
+        self.artist_country = None
 
         self._track = None
         self._track_corrected = None
@@ -56,10 +58,6 @@ class Track(object):
         self.album_url = None
         self.album_wiki = None
         self.album_year = 0
-
-        self.mood = []
-        self.genre = []
-        self.tempo = 0
 
         self.start = 0
         self.listened = 0
@@ -107,9 +105,15 @@ class Track(object):
                     pygn_user = pygn.register(self.__class__.engine.config['apis']['gracenote']['client_id'])
                     self.__class__.storage.config_set('apis/gracenote/user_id', pygn_user)
                 try:
-                    grace = pygn.search(clientID=pygn_client, userID=pygn_user,
-                                        artist=self.artist, track=self.track, album=self.album)
+                    grace = pygn.search(
+                        clientID=pygn_client,
+                        userID=pygn_user,
+                        artist=self.artist,
+                        track=self.track,
+                        album=self.album
+                    )
                     if type(grace) is pygn.gnmetadata:
+                        # print(grace['artist_type'])
                         grace['artist'] = grace['track_artist_name'] or grace['album_artist_name']
                         # Set artist properties
                         if (
@@ -125,9 +129,10 @@ class Track(object):
                             or grace['track_title'] == self.album
                         ):
                             # (grace['track_title'] is not used on purpose)
-                            self.mood = [grace['mood'][key]['TEXT'] for key in sorted(grace['mood'])]
-                            self.genre = [grace['genre'][key]['TEXT'] for key in sorted(grace['genre'])]
-                            self.tempo = [grace['tempo'][key]['TEXT'] for key in sorted(grace['tempo'])]
+                            if 'artist_type' in grace and '2' in grace['artist_type']:
+                                self.artist_gender = grace['artist_type']['2']['TEXT']
+                            if 'artist_origin' in grace and '2' in grace['artist_origin']:
+                                self.artist_country = grace['artist_origin']['2']['TEXT']
                         # Set album properties
                         if (
                             self.__class__.storage.config_get('settings/correct/gracenote')

@@ -132,10 +132,26 @@ fieldset[disabled] .btn-primary.focus {
  * Custom globals
  */
 
-.glyphicon,
-.fa {
+.no-margin {
+    margin: 0;
+}
+.no-padding {
+    padding: 0;
+}
+
+:not(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) .glyphicon,
+:not(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) .fa {
     vertical-align: middle;
     -webkit-font-smoothing: antialiased;
+}
+
+:-webkit-any(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) .glyphicon:first-of-type,
+:-webkit-any(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) .fa:first-of-type,
+:-webkit-any(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) .flag-icon:first-of-type {
+    margin-left: 5px;
+}
+:-webkit-any(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) .flag-icon {
+    font-size: 75%;
 }
 
 .fa.fa-heart,
