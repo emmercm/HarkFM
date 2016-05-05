@@ -187,10 +187,11 @@ class Track(object):
 
         # Return ElementTree nodes given an XPath, to be used with lfm_request()
         def xnodes(node, path):
-            try:
-                return node.findall(path)
-            except Exception as e:
-                self.__class__.logger.warn('%s  %s', type(e), e)
+            if node is not None:
+                try:
+                    return node.findall(path)
+                except Exception as e:
+                    self.__class__.logger.warn('%s  %s', type(e), e)
             return []
 
         # Return the first ElementTree value given an XPath, to be used with lfm_request()
