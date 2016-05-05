@@ -126,7 +126,7 @@ class Track(object):
                         # Set track properties
                         if (
                             self.__class__.storage.config_get('settings/correct/gracenote')
-                            or grace['track_title'] == self.album
+                            or grace['track_title'] == self.track
                         ):
                             # (grace['track_title'] is not used on purpose)
                             if 'artist_type' in grace and '2' in grace['artist_type']:
