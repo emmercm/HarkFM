@@ -110,16 +110,34 @@ class Track(object):
                     grace = pygn.search(clientID=pygn_client, userID=pygn_user,
                                         artist=self.artist, track=self.track, album=self.album)
                     if type(grace) is pygn.gnmetadata:
-                        self.artist_img = grace['artist_image_url']
-                        self.artist_url = grace['artist_bio_url']
-                        self.album_img = grace['album_art_url']
-                        if grace['album_year'] and int(grace['album_year']) > 1900:
-                            self.album_year = grace['album_year']
-                        self.mood = [grace['mood'][key]['TEXT'] for key in sorted(grace['mood'])]
-                        self.genre = [grace['genre'][key]['TEXT'] for key in sorted(grace['genre'])]
-                        self.tempo = [grace['tempo'][key]['TEXT'] for key in sorted(grace['tempo'])]
-                        if self.__class__.storage.config_get('settings/correct/gracenote'):
+                        grace['artist'] = grace['track_artist_name'] or grace['album_artist_name']
+                        # Set artist properties
+                        if (
+                            self.__class__.storage.config_get('settings/correct/gracenote')
+                            or grace['artist'] == self.artist
+                        ):
+                            # (grace['artist'] is not used on purpose)
+                            self.artist_img = grace['artist_image_url']
+                            self.artist_url = grace['artist_bio_url']
+                        # Set track properties
+                        if (
+                            self.__class__.storage.config_get('settings/correct/gracenote')
+                            or grace['track_title'] == self.album
+                        ):
+                            # (grace['track_title'] is not used on purpose)
+                            self.mood = [grace['mood'][key]['TEXT'] for key in sorted(grace['mood'])]
+                            self.genre = [grace['genre'][key]['TEXT'] for key in sorted(grace['genre'])]
+                            self.tempo = [grace['tempo'][key]['TEXT'] for key in sorted(grace['tempo'])]
+                        # Set album properties
+                        if (
+                            self.__class__.storage.config_get('settings/correct/gracenote')
+                            or not self.album
+                            or grace['album_title'] == self.album
+                        ):
                             self._album_corrected = grace['album_title']
+                            self.album_img = grace['album_art_url']
+                            if grace['album_year'] and int(grace['album_year']) > 1900:
+                                self.album_year = grace['album_year']
                 except Exception as e:
                     # urllib.error.URLError "getaddrinfo failed"
                     self.__class__.logger.warn('%s  %s', type(e), e)
@@ -154,16 +172,15 @@ class Track(object):
                     self.__class__.interface.index()
 
         # Perform a pylast request and return an ElementTree
-        def request(method, params):
+        def lfm_request(method, params):
             try:
                 lfm_network = self.__class__.engine.lfm_login()
-                params['autocorrect'] = 1
                 params['username'] = lfm_network.username
                 return ET.fromstring(pylast._Request(lfm_network, method, params).execute(False).toxml())
             except Exception as e:
                 self.__class__.logger.warn('%s  %s', type(e), e)
 
-        # Return ElementTree nodes given an XPath, to be used with request()
+        # Return ElementTree nodes given an XPath, to be used with lfm_request()
         def xnodes(node, path):
             try:
                 return node.findall(path)
@@ -171,7 +188,7 @@ class Track(object):
                 self.__class__.logger.warn('%s  %s', type(e), e)
             return []
 
-        # Return the first ElementTree value given an XPath, to be used with request()
+        # Return the first ElementTree value given an XPath, to be used with lfm_request()
         def xvalue(node, path):
             if node is not None:
                 try:
@@ -185,11 +202,13 @@ class Track(object):
         def lfm_do_artist(upd):
             if self.artist:
                 try:
-                    artist = request('artist.getInfo', {
-                        'artist': self.artist
+                    artist = lfm_request('artist.getInfo', {
+                        'artist': self.artist,
+                        'autocorrect': 1 if self.__class__.storage.config_get('settings/correct/last.fm') else 0
                     })
                     # Set artist properties
                     props = {
+                        'corrected': xvalue(artist, './artist/name'),
                         'url': xvalue(artist, './artist/url'),
                         'img': xvalue(artist, './artist/image[last()-1]'),
                         'listeners': int(xvalue(artist, './artist/stats/listeners') or 0),
@@ -206,8 +225,6 @@ class Track(object):
                         'wiki': xvalue(artist, './artist/bio/summary'),
                         'plays': int(xvalue(artist, './artist/stats/userplaycount') or 0),
                     }
-                    if self.__class__.storage.config_get('settings/correct/last.fm'):
-                        props['corrected'] = xvalue(artist, './artist/name')
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'artist' in p and p.endswith(prop)][0], props[prop])
@@ -220,11 +237,13 @@ class Track(object):
                 self.track_loved = False
                 try:
                     # Set track properties
-                    track = request('track.getInfo', {
+                    track = lfm_request('track.getInfo', {
                         'track': self.track,
-                        'artist': self.artist
+                        'artist': self.artist,
+                        'autocorrect': 1 if self.__class__.storage.config_get('settings/correct/last.fm') else 0
                     })
                     props = {
+                        'corrected': xvalue(track, './track/name'),
                         'url': xvalue(track, './track/url'),
                         'wiki': xvalue(track, './track/summary'),
                         'duration': int(xvalue(track, './track/duration') or 0) / 1000,
@@ -235,8 +254,6 @@ class Track(object):
                             'url': xvalue(t, 'url')
                         } for t in xnodes(track, './track/toptags/tag')[:5]]
                     }
-                    if self.__class__.storage.config_get('settings/correct/last.fm'):
-                        props['corrected'] = xvalue(track, './track/name')
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'track' in p and p.endswith(prop)][0], props[prop])
@@ -259,16 +276,16 @@ class Track(object):
             if self.artist and self.album:
                 try:
                     # Set album properties
-                    album = request('album.getInfo', {
+                    album = lfm_request('album.getInfo', {
                         'artist': self.artist,
-                        'album': self.album
+                        'album': self.album,
+                        'autocorrect': 1 if self.__class__.storage.config_get('settings/correct/last.fm') else 0
                     })
                     props = {
+                        'corrected': xvalue(album, 'name'),
                         'img': xvalue(album, './album/image[last()-1]'),
                         'url': xvalue(album, './album/url')
                     }
-                    if self.__class__.storage.config_get('settings/correct/last.fm'):
-                        props['corrected'] = xvalue(album, 'name')
                     for prop in props:
                         if props[prop]:
                             setattr(self, [p for p in dir(self) if 'album' in p and p.endswith(prop)][0], props[prop])
