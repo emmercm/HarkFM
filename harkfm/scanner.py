@@ -1,4 +1,4 @@
-import json
+import logging
 import os.path
 import re
 import time
@@ -13,6 +13,7 @@ class Scanner(object):
     _config = None
 
     storage = None
+    logger = None
 
     def __init__(self):
         if self.__class__._config is None:
@@ -34,6 +35,8 @@ class Scanner(object):
 
         if self.__class__.storage is None:
             self.__class__.storage = harkfm.Storage()
+        if self.__class__.logger is None:
+            self.__class__.logger = logging.getLogger('root')
 
         class ScannerThread(QThread):
             updated = QtCore.pyqtSignal(dict)
@@ -54,12 +57,19 @@ class Scanner(object):
                                 import win32gui
 
                                 def win_search(hwnd, win):
-                                    # Possibility of window closing in the middle of this enum
-                                    if not win32gui.IsWindow(hwnd):
-                                        return
                                     # Get window properties
-                                    w_class = win32gui.GetClassName(hwnd)
-                                    w_text = win32gui.GetWindowText(hwnd)
+                                    try:
+                                        w_class = win32gui.GetClassName(hwnd)
+                                        w_text = win32gui.GetWindowText(hwnd)
+                                    except Exception as e:
+                                        self.__class__.logger.error('%s  %s', type(e), e)
+                                        return
+                                    # Ignore some default windows
+                                    if w_class in [
+                                        'IME',
+                                        'MSCTFIME UI'
+                                    ]:
+                                        return
                                     # Look for match in self.scanner._config['windows']
                                     for idx, window in enumerate(self.scanner._config['windows']):
                                         if (
@@ -68,6 +78,7 @@ class Scanner(object):
                                         ):
                                             windows.append((idx, hwnd, w_class, win32gui.GetWindowText))
                                             break
+
                                 win32gui.EnumWindows(win_search, windows)
 
                                 if firefox.pid():
