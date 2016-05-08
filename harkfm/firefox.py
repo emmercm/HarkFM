@@ -9,12 +9,15 @@ class Firefox(object):
     _modified = None
     _session = {}
 
+    _pids_all = []
+    _pids_firefox = []
+
     def __init__(self):
         self.__sessionstore()
 
     def __sessionstore(self):
         # Reset variables if Firefox not running
-        if not self.pid():
+        if not self.pids():
             self.__class__._filename = None
             self.__class__._modified = None
             self.__class__._session = {}
@@ -39,19 +42,27 @@ class Firefox(object):
                 self.__class__._session = json.loads(content.read())
             self.__class__._modified = os.path.getmtime(self.__class__._filename)
 
-    def pid(self):
-        pids = []
+    def pids(self):
+        # If running processes hasn't changed return the Firefox PID cache
+        pids_all = psutil.pids()
+        if pids_all == self.__class__._pids_all:
+            return self.__class__._pids_firefox
+        self.__class__._pids_all = pids_all
+
+        # Build and return Firefox PID cache
+        pids_firefox = []
         for p in psutil.process_iter():
             try:
                 if os.path.splitext(p.name())[0] == 'firefox':
-                    pids.append(p.pid)
+                    pids_firefox.append(p.pid)
             except psutil.NoSuchProcess:
                 pass
-        return pids
+        self.__class__._pids_firefox = pids_firefox
+        return self.__class__._pids_firefox
 
     def hwnd(self, pid=None):
         if pid is None:
-            pid = self.pid()
+            pid = self.pids()
         if type(pid) is not list:
             pid = [pid]
 

@@ -81,7 +81,7 @@ class Scanner(object):
 
                                 win32gui.EnumWindows(win_search, windows)
 
-                                if firefox.pid():
+                                if firefox.pids():
                                     hwnd = firefox.hwnd()
                                     hwnd = hwnd[0] if len(hwnd) > 0 else None
                                     w_class = win32gui.GetClassName(hwnd) if hwnd is not None else ''
