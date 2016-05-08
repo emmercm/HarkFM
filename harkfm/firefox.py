@@ -19,6 +19,10 @@ class Firefox(object):
             self.__class__._modified = None
             self.__class__._session = {}
 
+        # Forget any invalid sessionstore file
+        if self.__class__._filename is not None and not os.path.exists(self.__class__._filename):
+            self.__class__._filename = None
+
         # Find sessionstore file
         if self.__class__._filename is None:
             profiles = None
@@ -36,7 +40,14 @@ class Firefox(object):
             self.__class__._modified = os.path.getmtime(self.__class__._filename)
 
     def pid(self):
-        return [p.pid for p in psutil.process_iter() if os.path.splitext(p.name())[0] == 'firefox']
+        pids = []
+        for p in psutil.process_iter():
+            try:
+                if os.path.splitext(p.name())[0] == 'firefox':
+                    pids.append(p.pid)
+            except psutil.NoSuchProcess:
+                pass
+        return pids
 
     def hwnd(self, pid=None):
         if pid is None:
