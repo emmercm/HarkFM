@@ -62,7 +62,7 @@ class Scanner(object):
                                         w_class = win32gui.GetClassName(hwnd)
                                         w_text = win32gui.GetWindowText(hwnd)
                                     except Exception as e:
-                                        self.__class__.logger.error('%s  %s', type(e), e)
+                                        self.scanner.logger.error('%s  %s', type(e), e)
                                         return
                                     # Ignore some default windows
                                     if w_class in [
