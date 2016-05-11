@@ -1,5 +1,6 @@
 import glob
 import json
+import logging
 import os
 
 import psutil
@@ -12,35 +13,48 @@ class Firefox(object):
     _pids_all = []
     _pids_firefox = []
 
+    logger = None
+
     def __init__(self):
-        self.__sessionstore()
+        if self.__class__.logger is None:
+            self.__class__.logger = logging.getLogger('root')
 
-    def __sessionstore(self):
-        # Reset variables if Firefox not running
-        if not self.pids():
-            self.__class__._filename = None
-            self.__class__._modified = None
-            self.__class__._session = {}
-
+    @property
+    def filename(self):
         # Forget any invalid sessionstore file
         if self.__class__._filename is not None and not os.path.exists(self.__class__._filename):
             self.__class__._filename = None
 
         # Find sessionstore file
-        if self.__class__._filename is None:
-            profiles = None
-            if os.name == 'nt':
-                profiles = os.environ['APPDATA'] + '\Mozilla\Firefox\Profiles'
-            if profiles is not None:
-                sessions = glob.glob(os.environ['APPDATA'] + '\\Mozilla\\Firefox\\Profiles\\*\\sessionstore-backups\\recovery.js')
-                if len(sessions) > 0:
-                    self.__class__._filename = sorted(sessions, key=lambda session: os.path.getmtime(session), reverse=True)[0]
+        try:
+            if self.__class__._filename is None:
+                profiles = None
+                if os.name == 'nt':
+                    profiles = os.environ['APPDATA'] + '\Mozilla\Firefox\Profiles'
+                if profiles is not None:
+                    sessions = glob.glob(os.environ['APPDATA'] + '\\Mozilla\\Firefox\\Profiles\\*\\sessionstore-backups\\recovery.js')
+                    if len(sessions) > 0:
+                        self.__class__._filename = sorted(sessions, key=lambda session: os.path.getmtime(session), reverse=True)[0]
+        except Exception as e:
+            self.__class__.logger.warn('%s  %s', type(e), e)
+            self.__class__._filename = None
 
+        return self.__class__._filename
+
+    @property
+    def session(self):
         # Read sessionstore file (if changed)
-        if self.__class__._filename is not None and os.path.getmtime(self.__class__._filename) != self.__class__._modified:
-            with open(self.__class__._filename, 'r', encoding='utf-8') as content:
-                self.__class__._session = json.loads(content.read())
-            self.__class__._modified = os.path.getmtime(self.__class__._filename)
+        try:
+            if self.filename is not None and os.path.getmtime(self.filename) != self.__class__._modified:
+                with open(self.filename, 'r', encoding='utf-8') as content:
+                    self.__class__._session = json.loads(content.read())
+                self.__class__._modified = os.path.getmtime(self.filename)
+        except Exception as e:
+            self.__class__.logger.warn('%s  %s', type(e), e)
+            self.__class__._modified = None
+            self.__class__._session = {}
+
+        return self.__class__._session
 
     def pids(self):
         # If running processes hasn't changed return the Firefox PID cache
@@ -79,10 +93,9 @@ class Firefox(object):
         return windows
 
     def tabs(self):
-        self.__sessionstore()
         tabs = []
-        if 'windows' in self.__class__._session:
-            for window in self.__class__._session['windows'][::-1]:
+        if 'windows' in self.session:
+            for window in self.session['windows'][::-1]:
                 if 'tabs' in window:
                     for tab in window['tabs'][::-1]:
                         if 'entries' in tab and 'index' in tab and len(tab['entries']) >= tab['index']:
