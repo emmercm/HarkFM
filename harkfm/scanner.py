@@ -123,9 +123,7 @@ class Scanner(object):
 
                             # Parse window title (if changed)
                             if not hasattr(engine.current, 'w_text') or w_text != engine.current.w_text:
-                                props = {'w_text': w_text, 'app': window['title']}
-                                if 'icon' in window:
-                                    props['app_icon'] = window['icon']
+                                props = {'w_text': w_text, 'app': window}
                                 if 'title' in window['window']:
                                     w_text = harkfm.Util.regex(window['window']['title'], w_text)
                                 for prop in window['regex']:

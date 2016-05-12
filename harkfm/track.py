@@ -28,7 +28,6 @@ class Track(object):
             self.__class__.logger = logging.getLogger('root')
 
         self.app = None
-        self.app_icon = None
 
         self._artist = None
         self._artist_corrected = None
@@ -129,9 +128,9 @@ class Track(object):
                             or grace['track_title'] == self.track
                         ):
                             # (grace['track_title'] is not used on purpose)
-                            if 'artist_type' in grace and '2' in grace['artist_type']:
+                            if '2' in grace['artist_type']:
                                 self.artist_gender = grace['artist_type']['2']['TEXT']
-                            if 'artist_origin' in grace and '2' in grace['artist_origin']:
+                            if '2' in grace['artist_origin']:
                                 self.artist_country = grace['artist_origin']['2']['TEXT']
                         # Set album properties
                         if (
@@ -216,13 +215,13 @@ class Track(object):
                     props = {
                         'corrected': xvalue(artist, './artist/name'),
                         'url': xvalue(artist, './artist/url'),
-                        'img': xvalue(artist, './artist/image[last()-1]'),
+                        'img': xvalue(artist, './artist/image[@size][last()-1]'),
                         'listeners': int(xvalue(artist, './artist/stats/listeners') or 0),
                         'plays_global': int(xvalue(artist, './artist/stats/playcount') or 0),
                         'similar': [{
                             'name': xvalue(a, 'name'),
                             'url': xvalue(a, 'url'),
-                            'img': xvalue(a, 'image[last()-1]')
+                            'img': xvalue(a, 'image[@size][last()-1]')
                         } for a in xnodes(artist, './artist/similar/artist')[:4]],
                         'tags': [{
                             'name': xvalue(t, 'name'),
@@ -267,7 +266,7 @@ class Track(object):
                     if self.__class__.storage.config_get('settings/correct/last.fm'):
                         props = {
                             'corrected': xvalue(track, './track/album/title'),
-                            'img': xvalue(track, './track/album/image[last()-1]'),
+                            'img': xvalue(track, './track/album/image[@size][last()-1]'),
                             'url': xvalue(track, './track/album/url')
                         }
                         for prop in props:
@@ -289,7 +288,7 @@ class Track(object):
                     })
                     props = {
                         'corrected': xvalue(album, 'name'),
-                        'img': xvalue(album, './album/image[last()-1]'),
+                        'img': xvalue(album, './album/image[@size][last()-1]'),
                         'url': xvalue(album, './album/url')
                     }
                     for prop in props:

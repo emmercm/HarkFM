@@ -105,7 +105,11 @@
     <div class="navbar navbar-fixed-top bar-app">
         <div class="row">
             <div class="app-icon">
-                <span class="${current.app_icon or 'glyphicon glyphicon-music'}" py:if="current"></span>
+                <py:if test="current">
+                    <a href="${current['app']['website']}" py:strip="'website' not in current['app']">
+                        <span class="${current['app']['icon'] if 'icon' in current['app'] else 'glyphicon glyphicon-music'}"></span>
+                    </a>
+                </py:if>
                 <span class="fa fa-lastfm" py:if="not current"></span>
             </div>
             <div>
@@ -116,12 +120,16 @@
                     <py:if test="not current">
                         Hello,
                         <br />
-                        <strong>${lastfm['username']}!</strong>
+                        <a href="http://www.last.fm/user/${lastfm['username']}">
+                            <strong>${lastfm['username']}!</strong>
+                        </a>
                     </py:if>
                     <py:if test="current">
                         Scrobbling from
                         <br />
-                        <strong>${current.app}</strong>
+                        <a href="${current['app']['website']}" py:strip="'website' not in current['app']">
+                            <strong>${current['app']['title']}</strong>
+                        </a>
                     </py:if>
                 </py:if>
             </div>
