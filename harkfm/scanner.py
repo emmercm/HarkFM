@@ -128,6 +128,7 @@ class Scanner(object):
                                     w_text = harkfm.Util.regex(window['window']['title'], w_text)
                                 for prop in window['regex']:
                                     props[prop] = harkfm.Util.regex(window['regex'][prop], w_text)
+                                    if props[prop] is None: props[prop] = ''
                                     # Do replacements
                                     if self.scanner.storage.config_get('settings/correct/scanner'):
                                         for replace in self.scanner._config['replace']['all']:
@@ -141,7 +142,7 @@ class Scanner(object):
 
         def emit_updated(props):
             engine = harkfm.Engine()
-            if props:
+            if props and props['artist'] and props['track']:
                 engine.current = harkfm.Track(props)
             else:
                 engine.current = None
