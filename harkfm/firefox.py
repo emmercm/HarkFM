@@ -9,6 +9,7 @@ class Firefox(object):
     _filename = None
     _modified = None
     _session = {}
+    _session_lock = False
 
     _pids_all = []
     _pids_firefox = []
@@ -43,16 +44,17 @@ class Firefox(object):
 
     @property
     def session(self):
-        # Read sessionstore file (if changed)
-        try:
-            if self.filename is not None and os.path.getmtime(self.filename) != self.__class__._modified:
-                with open(self.filename, 'r', encoding='utf-8') as content:
-                    self.__class__._session = json.loads(content.read())
-                self.__class__._modified = os.path.getmtime(self.filename)
-        except Exception as e:
-            self.__class__.logger.warn('%s  %s', type(e), e)
-            self.__class__._modified = None
-            self.__class__._session = {}
+        if not self._session_lock:
+            # Read sessionstore file (if changed)
+            try:
+                if self.filename is not None and os.path.getmtime(self.filename) != self.__class__._modified:
+                    with open(self.filename, 'r', encoding='utf-8') as content:
+                        self.__class__._session = json.loads(content.read())
+                    self.__class__._modified = os.path.getmtime(self.filename)
+            except Exception as e:
+                self.__class__.logger.warn('%s  %s', type(e), e)
+                self.__class__._modified = None
+                self.__class__._session = {}
 
         return self.__class__._session
 
@@ -95,12 +97,14 @@ class Firefox(object):
     def tabs(self):
         tabs = []
         if 'windows' in self.session:
+            self._session_lock = True
             for window in self.session['windows'][::-1]:
                 if 'tabs' in window:
                     for tab in window['tabs'][::-1]:
                         if 'entries' in tab and 'index' in tab and len(tab['entries']) >= tab['index']:
                             entry = tab['entries'][tab['index']-1]
                             tabs.append(entry)
+            self._session_lock = False
         return tabs
 
     def tab_title(self, docshellID):
