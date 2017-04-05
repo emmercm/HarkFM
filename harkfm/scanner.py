@@ -56,30 +56,35 @@ class Scanner(object):
                             if os.name == 'nt':
                                 import win32gui
 
-                                def win_search(hwnd, win):
-                                    # Get window properties
-                                    try:
-                                        w_class = win32gui.GetClassName(hwnd)
-                                        w_text = win32gui.GetWindowText(hwnd)
-                                    except Exception as e:
-                                        self.scanner.logger.error('%s  %s', type(e), e)
-                                        return
-                                    # Ignore some default windows
-                                    if w_class in [
-                                        'IME',
-                                        'MSCTFIME UI'
-                                    ]:
-                                        return
-                                    # Look for match in self.scanner._config['windows']
-                                    for idx, window in enumerate(self.scanner._config['windows']):
-                                        if (
-                                            ('class' not in window['window'] or re.search(window['window']['class'], w_class)) and
-                                            ('title' not in window['window'] or re.search(window['window']['title'], w_text))
-                                        ):
-                                            windows.append((idx, hwnd, w_class, win32gui.GetWindowText))
-                                            break
+                                def win_search(hwnd, lParam):
+                                    if win32gui.IsWindowVisible(hwnd):
+                                        # Get window properties
+                                        try:
+                                            w_class = win32gui.GetClassName(hwnd)
+                                            w_text = win32gui.GetWindowText(hwnd)
+                                        except Exception as e:
+                                            self.scanner.logger.error('%s  %s', type(e), e)
+                                            return
+                                        # Ignore some default windows
+                                        if w_class in [
+                                            'IME',
+                                            'MSCTFIME UI',
+                                            'tooltips_class32'
+                                        ]:
+                                            return
+                                        # Look for match in self.scanner._config['windows']
+                                        try:
+                                            for idx, window in enumerate(self.scanner._config['windows']):
+                                                if (
+                                                    ('class' not in window['window'] or (w_class and re.search(window['window']['class'], w_class))) and
+                                                    ('title' not in window['window'] or (w_text and re.search(window['window']['title'], w_text)))
+                                                ):
+                                                    windows.append((idx, hwnd, w_class, win32gui.GetWindowText))
+                                                    break
+                                        except Exception as e:
+                                            self.scanner.logger.error('%s  %s', type(e), e)
 
-                                win32gui.EnumWindows(win_search, windows)
+                                win32gui.EnumWindows(win_search, None)
 
                                 if firefox.pids():
                                     hwnd = firefox.hwnd()
