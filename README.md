@@ -5,13 +5,10 @@ An alternative Last.fm client.
 1. Download the latest [release](https://github.com/emmercm/HarkFM/releases).
 
 ## Building HarkFM From Source
-1. Install [Python 3.4](https://www.python.org/downloads/).
-2. Install [PyQt5](https://www.riverbankcomputing.com/software/pyqt/download5) for Python 3.4.
-3. Install PyPi dependencies:<br/>
-`pip install genshi pypiwin32 psutil pylast jsonpickle`
-4. Build QtDesigner Python files:<br/>
-`C:\Python34\Lib\site-packages\PyQt5\pyuic5 QtDesigner.ui -o QtDesigner.py`
-5. Configure API keys in `engine.json`.
+1. Install [Python 3](https://www.python.org/downloads/).
+2. Install PyPi dependencies:<br/>
+`pip install PyQt5 genshi pypiwin32 psutil pylast jsonpickle`
+3. Configure API keys in `engine.json`.
 
 ## Developer Todo
 - Put current Last.fm username in window title.
@@ -27,3 +24,4 @@ An alternative Last.fm client.
 - Windows Aero taskbar sub-icon (if possible with Qt).
 - Windows Aero taskbar hover mini icons (if possible with Qt).
 - Front-end button for YouTube search for top music video.
+- Filter out tags: "seen live", artist name in track tags

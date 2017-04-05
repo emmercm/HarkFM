@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import logging
+import os
 import sys
 import time
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from QtDesigner import Ui_MainWindow
+import PyQt5.uic
 
 import harkfm
 
@@ -21,9 +23,8 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 app = QApplication(sys.argv)
-window = QMainWindow()
-ui = Ui_MainWindow()
-ui.setupUi(window)
+window = QMainWindow(flags=Qt.Window)
+ui = PyQt5.uic.loadUi(os.path.join(os.path.dirname(sys.argv[0]), 'harkfm/interface.ui'), window)
 
 # Init the interface
 interface = harkfm.Interface(window, ui)

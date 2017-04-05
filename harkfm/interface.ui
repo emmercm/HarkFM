@@ -34,7 +34,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QWebView" name="webView">
+     <widget class="QWebEngineView" name="webEngineView" native="true">
       <property name="palette">
        <palette>
         <active>
@@ -78,9 +78,6 @@
       <property name="autoFillBackground">
        <bool>true</bool>
       </property>
-      <property name="renderHints">
-       <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
-      </property>
      </widget>
     </item>
    </layout>
@@ -88,9 +85,10 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QWebView</class>
+   <class>QWebEngineView</class>
    <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
+   <header>PyQt5/QtWebEngineWidgets</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

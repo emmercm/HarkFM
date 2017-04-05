@@ -1,3 +1,22 @@
+if(typeof(QWebChannel) != 'undefined') {
+    new QWebChannel(qt.webChannelTransport, function(channel) {
+        window.py = channel.objects.py;
+
+        // Handle socket I/O for track time
+        var progress_bar = $('.bar-time .progress .progress-bar:visible');
+        if(progress_bar.length) {
+            setInterval(py.update, 100);
+        }
+        py.updated.connect(function(elapsed, percent, remaining) {
+            progress_bar.first().html(elapsed);
+            progress_bar.first().css('width', percent+'%');
+            progress_bar.last().html(remaining);
+        });
+    });
+} else {
+    alert('QWebChannel is not supported!');
+}
+
 $(document).ready(function() {
     // .modal-body max-height:calc()
     function onresize_modal() {
@@ -21,15 +40,6 @@ $(document).ready(function() {
     }
     $(window).resize(onresize_imgbox);
     onresize_imgbox();
-
-    var progress_bar = $('.bar-time .progress .progress-bar:visible');
-    if(progress_bar.length) {
-        setInterval(function() {
-            progress_bar.first().html(py.elapsed());
-            progress_bar.first().css('width', py.percent()+'%');
-            progress_bar.last().html(py.remaining());
-        }, 100);
-    }
 
     $('input:visible').first().focus();
 });

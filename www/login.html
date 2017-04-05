@@ -20,7 +20,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-12">
-                    <form class="form-horizontal" onsubmit="py.login(this);">
+                    <form class="form-horizontal" onsubmit="py.login($(this).serialize()); return false;">
                         <div class="form-group">
                             <h1 class="col-xs-offset-2 col-xs-10">Last.fm Login</h1>
                         </div>
@@ -47,8 +47,9 @@
         </div>
 
         <!--! Placed at the end of the document so the pages load faster (?) -->
-        <script src="static/js/jquery-2.2.0.min.js"></script>
-        <script src="static/js/bootstrap-3.3.6.min.js"></script>
-        <script src="static/js/harkfm.js"></script>
+        <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+        <script type="text/javascript" src="static/js/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="static/js/bootstrap-3.3.6.min.js"></script>
+        <script type="text/javascript" src="static/js/harkfm.js"></script>
     </body>
 </html>

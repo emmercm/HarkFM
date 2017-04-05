@@ -1,4 +1,5 @@
 import logging
+import math
 import time
 import xml.etree.ElementTree as ET
 
@@ -91,6 +92,28 @@ class Track(object):
     @album.setter
     def album(self, value):
         self._album = value
+
+    @property
+    def elapsed(self):
+        elapsed = math.floor(time.time() - self.start)
+        text = ''
+        if elapsed > 3600:
+            text += str(math.floor(elapsed / 3600)) + ':'
+        text += str(math.floor(elapsed / 60) % 60) + ':' + str(elapsed % 60).zfill(2)
+        return text
+
+    @property
+    def percent(self):
+        return min(100, round((time.time() - self.start) / self.track_duration * 100, 1))
+
+    @property
+    def remaining(self):
+        remaining = max(math.ceil(self.start + self.track_duration - time.time()), 0)
+        text = '-'
+        if remaining > 3600:
+            text += str(math.floor(remaining / 3600)) + ':'
+        text += str(math.floor(remaining / 60) % 60) + ':' + str(remaining % 60).zfill(2)
+        return text
 
     def correct(self):
         self.__correct_gn()
