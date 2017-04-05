@@ -108,7 +108,7 @@ class Engine(object):
                 self.__class__.storage.config_set('queue', queue)
         if (
             self.__class__._lfm_network is not None
-            and self.__class__._thread_scrobbler is None or not self.__class__._thread_scrobbler.isRunning()
+            and (self.__class__._thread_scrobbler is None or not self.__class__._thread_scrobbler.isRunning())
         ):
             self.__class__._thread_scrobbler = harkfm.Util.thread(scrobble_do, None, None)
 
