@@ -111,6 +111,6 @@ class Firefox(object):
         if type(docshellID) is dict and 'docshellID' in docshellID:
             docshellID = docshellID['docshellID']
         for tab in self.tabs():
-            if tab['docshellID'] == docshellID:
+            if 'docshellID' in tab and tab['docshellID'] == docshellID:
                 return tab['title'] if 'title' in tab else ''
         return ''
