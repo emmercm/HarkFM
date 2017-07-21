@@ -54,6 +54,7 @@ class Scanner(object):
                     while len(windows) == 0:
                         if 'windows' in self.scanner._config and len(self.scanner._config['windows']) > 0:
                             if os.name == 'nt':
+                                import pywintypes
                                 import win32gui
 
                                 def win_search(hwnd, lParam):
@@ -87,18 +88,18 @@ class Scanner(object):
                                 win32gui.EnumWindows(win_search, None)
 
                                 if firefox.pids():
-                                    hwnd = firefox.hwnd()
-                                    hwnd = hwnd[0] if len(hwnd) > 0 else None
-                                    w_class = win32gui.GetClassName(hwnd) if hwnd is not None else ''
-                                    for tab in firefox.tabs():
-                                        w_text = tab['title'] if 'title' in tab else ''
-                                        for idx, window in enumerate(self.scanner._config['windows']):
-                                            if (
-                                                ('class' not in window['window'] or re.search(window['window']['class'], w_class)) and
-                                                ('title' not in window['window'] or re.search(window['window']['title'], w_text))
-                                            ):
-                                                windows.append((idx, tab, w_class, firefox.tab_title))
-                                                break
+                                    for hwnd in firefox.hwnd():
+                                        if win32gui.IsWindow(hwnd):
+                                            w_class = win32gui.GetClassName(hwnd) if hwnd is not None else ''
+                                            for tab in firefox.tabs():
+                                                w_text = tab['title'] if 'title' in tab else ''
+                                                for idx, window in enumerate(self.scanner._config['windows']):
+                                                    if (
+                                                        ('class' not in window['window'] or re.search(window['window']['class'], w_class)) and
+                                                        ('title' not in window['window'] or re.search(window['window']['title'], w_text))
+                                                    ):
+                                                        windows.append((idx, tab, w_class, firefox.tab_title))
+                                                        break
 
                         time.sleep(0.5)
 
