@@ -67,12 +67,12 @@ class Firefox(object):
 
         # Build and return Firefox PID cache
         pids_firefox = []
-        for p in psutil.process_iter():
-            try:
+        try:
+            for p in psutil.process_iter():
                 if os.path.splitext(p.name())[0] == 'firefox':
                     pids_firefox.append(p.pid)
-            except psutil.NoSuchProcess:
-                pass
+        except (psutil.NoSuchProcess, OSError, RuntimeError):
+            pass
         self.__class__._pids_firefox = pids_firefox
         return self.__class__._pids_firefox
 
