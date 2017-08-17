@@ -54,7 +54,6 @@ class Scanner(object):
                     while len(windows) == 0:
                         if 'windows' in self.scanner._config and len(self.scanner._config['windows']) > 0:
                             if os.name == 'nt':
-                                import pywintypes
                                 import win32gui
 
                                 def win_search(hwnd, lParam):
