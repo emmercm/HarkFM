@@ -161,7 +161,7 @@
             "enabled": "true",
             "icon": "fa fa-youtube",
             "window": {
-                "title": "(.* - .*) - YouTube"
+                "title": "(?:\\([0-9]+\\) )?(.* - .*) - YouTube"
             },
             "regex": {
                 "artist": "(.*?) - .*",
