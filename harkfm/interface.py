@@ -45,7 +45,7 @@ class Interface(object):
                 updated = pyqtSignal(str, float, str)
 
                 def javaScriptConsoleMessage(self, level, msg, line, source):
-                    print(source, line, msg)
+                    harkfm.Interface.logger.debug('%s:%s  %s', source, line, msg)
 
                 def acceptNavigationRequest(self, url, type, is_main_frame):
                     if type == QWebEnginePage.NavigationTypeLinkClicked:
