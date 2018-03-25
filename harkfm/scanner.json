@@ -114,6 +114,21 @@
                 "track": ".*? - (.*)"
             }
         },
+		{
+            // 2018/03/13 v1.0.75.483
+            "title": "Spotify",
+            "website": "https://www.spotify.com",
+            "enabled": "true",
+            "icon": "fa fa-spotify",
+            "window": {
+                "class": "Chrome_WidgetWin_0",
+                "title": "(.* - .*)"
+            },
+            "regex": {
+                "artist": "(.*?) - .*",
+                "track": ".*? - (.*)"
+            }
+        },
         {
             // 2016/05/02 play.spotify.com
             "title": "Spotify",
