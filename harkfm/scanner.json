@@ -221,7 +221,7 @@
     "replace": {
         "all": [
             // Special characters
-            [ "[\\´\\’]", "'" ],
+            [ "[\\`\\´\\’]", "'" ],
             [ "[\\“\\”]", "\"" ],
 
             // Featuring
@@ -247,22 +247,26 @@
             // Suffixes
             [ "(?i)(.+), The$", "The \\1" ],
             [ "(?i)The The", "The" ],
-            [ "(?i)(.+) \\((Pop|Pop Punk|Rock)\\)", "\\1" ]     // Pandora
+            [ "(?i)(.+) \\((Pop|Pop Punk|Rock)\\)", "\\1" ]   // Pandora
 
             // Specific
         ],
         "track": [
             // Featuring
-            [ "(?i)(Feat\\. [^()]+) of [^()]+", "\\1" ],   // "of" strip
             [ "(?i) - (Feat\\. [^()]+)", " (\\1)" ],       // Spotify hyphen fix
-            [ "(?i) - (With\\. [^()]+)", " (\\1)" ],       // Spotify hyphen fix
+            [ "(?i) - With ([^()]+)", " (Feat. \\1)" ],    // Spotify hyphen fix
+			[ "(?i)(Feat\\. [^()]+) of [^()]+", "\\1" ],   // "of" strip
             [ "(?i) (Feat\\. [^()]+)", " (\\1)" ],         // enforce parenthases
 
             // Suffixes
             [ "(?i) - (Mozilla Firefox)$", "" ],
-            [ "(?i) - ([0-9]{4}|Acoustic.*|Airplay|Album Version|Best Of|Bonus.*|Clean|.*Cover|Dirty|.*Edit|Edited|Explicit|From .+|Full Length|Hidden Track|Live From .+|Main|.*Mix|Non-Album Track|Original|Original Version|Recorded at .+|.*Remaster|Remastered|.*Remastered [0-9]{2,4}|.*Remix|Radio|Single|Spotify Sessions.*|Unplugged|.*Version)$", "" ],
-            [ "(?i) \\(([^()]+)?([0-9]{2,4} Version|Acoustic.*|Album|Amended|ASOT [0-9]+|Bonus|Clean|.+ Cover|Dirty|Edit|Edited|Explicit|From.+Soundtrack|Mainstream|Mix|Mix Cut|PG13|Prod|Radio|Remastered|Re-Recorded|Single)([^()]+)?\\)$", "" ],
-            [ "[\\s\\-]+$", "" ]
+            [ "(?i) - ([0-9]{4}|Accapella|Acoustic.*|Airplay|Album Version|Best Of|Bonus.*|Clean|.*Cover|Demo|Dirty|.*Edit|Edited|Explicit|Flipped|From .+|Full Length|Hidden Track|Live.*|Main.*|.*Mix|Non-Album Track|Orchestral.*|Original.*|Recorded at .+|.*Remaster|.*Remastered|.*Remastered [0-9]{2,4}|.*Remix|Radio|Rock|Single.*|Spotify Sessions.*|Stripped|Unpeeled|Unplugged|US|.*Version|VIP)$", "" ],
+            [ "(?i) [\\(\\[]([^()\\[\\]]+)?([0-9]{2,4} Version|Acoustic.*|Album|Amended|ASOT [0-9]+|Bonus.*|Clean|.*Cover|.*Demo.*|Dirty|.*Edit|Edited|Explicit|Extended.*|From.+Soundtrack|Mainstream|Mix|Mix Cut|Official.*|Original.*|PG13|Prod|Radio|Remastered|Re-Recorded|Revisited|Single)([^()\\[\\]]+)?[\\)\\]]$", "" ],
+            [ "[\\s\\-]+$", "" ],
+			
+			// YouTube
+			[ "(?i) \\(([^()]+)?(HD Music Video)([^()]+)?\\)$", "" ],
+			[ " (LYRICS)$", "" ]
 
             // Specific
         ],
